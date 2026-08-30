@@ -110,7 +110,7 @@ function AdminAttendanceCalendar() {
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/employees", {
+        const response = await fetch("http://localhost:5000/employees", {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
@@ -130,8 +130,6 @@ function AdminAttendanceCalendar() {
 
     fetchEmployees();
   }, []);
-
-  // DEPARTMENTS
 
   const departments = useMemo(() => {
     const departmentMap = new Map();
@@ -158,8 +156,6 @@ function AdminAttendanceCalendar() {
     return Array.from(departmentMap.values());
   }, [employees]);
 
-  // FILTER EMPLOYEES
-
   const filteredEmployees = useMemo(() => {
     if (!selectedDepartment) {
       return employees;
@@ -173,15 +169,11 @@ function AdminAttendanceCalendar() {
     });
   }, [employees, selectedDepartment]);
 
-  // DEPARTMENT CHANGE
-
   const handleDepartmentChange = (event) => {
     setSelectedDepartment(event.target.value);
 
     setSelectedEmployee("");
   };
-
-  // FETCH MONTHLY ATTENDANCE
 
   const fetchMonthlyLogs = async () => {
     try {
@@ -202,7 +194,7 @@ function AdminAttendanceCalendar() {
       }
 
       const response = await fetch(
-        `http://localhost:5000/api/attendance/admin/calendar?${params.toString()}`,
+        `http://localhost:5000/attendance/admin/calendar?${params.toString()}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -285,8 +277,6 @@ function AdminAttendanceCalendar() {
     };
   }, [selectedDepartment, selectedEmployee]);
 
-  // MONTH NAVIGATION
-
   const handlePrevMonth = () => {
     setCurrentDate(new Date(year, month - 2, 1));
   };
@@ -295,13 +285,9 @@ function AdminAttendanceCalendar() {
     setCurrentDate(new Date(year, month, 1));
   };
 
-  // CALENDAR INFORMATION
-
   const daysInMonth = new Date(year, month, 0).getDate();
 
   const firstDayIndex = new Date(year, month - 1, 1).getDay();
-
-  // LOGS INDEXED BY EMPLOYEE + DATE
 
   const logsByEmployeeAndDate = useMemo(() => {
     const map = new Map();

@@ -31,7 +31,7 @@ function AttendanceControl({ employeeId }) {
     setMessage("");
     try {
       const response = await fetch(
-        "http://localhost:5000/api/attendance/clock-in",
+        "http://localhost:5000/attendance/clock-in",
         {
           method: "POST",
           headers: {
@@ -56,7 +56,7 @@ function AttendanceControl({ employeeId }) {
     setMessage("");
     try {
       const response = await fetch(
-        "http://localhost:5000/api/attendance/clock-out",
+        "http://localhost:5000/attendance/clock-out",
         {
           method: "POST",
           headers: {
