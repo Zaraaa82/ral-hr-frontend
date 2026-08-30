@@ -1,0 +1,486 @@
+.admin-calendar-container {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+  max-width: 1400px;
+  margin: 20px auto;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  box-sizing: border-box;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.calendar-header h2 {
+  margin: 0;
+
+  font-size: 1.4rem;
+  font-weight: 700;
+
+  color: #1a1a1a;
+
+  white-space: nowrap;
+}
+
+.calendar-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  gap: 16px;
+
+  flex-wrap: wrap;
+}
+
+.filter-select-group {
+  display: flex;
+  align-items: center;
+
+  gap: 6px;
+
+  font-size: 0.875rem;
+  color: #555555;
+}
+
+.filter-select-group label {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.filter-select-group select {
+  min-width: 140px;
+
+  padding: 7px 10px;
+
+  border-radius: 6px;
+  border: 1px solid #cccccc;
+
+  background-color: #ffffff;
+
+  font-size: 0.85rem;
+
+  outline: none;
+  cursor: pointer;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.filter-select-group select:hover {
+  border-color: #999999;
+}
+
+.filter-select-group select:focus {
+  border-color: #0066cc;
+
+  box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.1);
+}
+
+.calendar-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.calendar-nav button {
+  padding: 8px 14px;
+
+  border: 1px solid #cccccc;
+
+  background-color: #f8f9fa;
+
+  border-radius: 6px;
+
+  cursor: pointer;
+
+  font-weight: 500;
+  font-size: 0.85rem;
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.1s ease;
+}
+
+.calendar-nav button:hover {
+  background-color: #e9ecef;
+  border-color: #aaaaaa;
+}
+
+.calendar-nav button:active {
+  transform: scale(0.97);
+}
+
+.attendance-legend {
+  display: flex;
+  align-items: center;
+
+  gap: 16px;
+
+  margin-bottom: 16px;
+  padding: 10px 12px;
+
+  background-color: #f8f9fa;
+
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+
+  gap: 6px;
+
+  font-size: 0.78rem;
+  font-weight: 500;
+
+  color: #555555;
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+
+  border-radius: 50%;
+
+  display: inline-block;
+}
+
+/* Legend colors */
+
+.legend-dot.present {
+  background-color: #137333;
+}
+
+.legend-dot.absent {
+  background-color: #c5221f;
+}
+
+.legend-dot.half-day {
+  background-color: #d97706;
+}
+
+.legend-dot.on-leave {
+  background-color: #2563eb;
+}
+
+.legend-dot.holiday {
+  background-color: #7c3aed;
+}
+
+.legend-dot.weekly-off {
+  background-color: #6b7280;
+}
+
+.calendar-grid {
+  display: grid;
+
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+
+  gap: 8px;
+}
+
+.day-header {
+  text-align: center;
+
+  font-weight: 600;
+
+  padding: 9px 6px;
+
+  background-color: #f1f3f5;
+
+  border-radius: 6px;
+
+  color: #495057;
+
+  font-size: 0.85rem;
+}
+
+.calendar-day {
+  min-height: 115px;
+
+  border: 1px solid #e9ecef;
+
+  border-radius: 8px;
+
+  padding: 7px;
+
+  background-color: #ffffff;
+
+  display: flex;
+  flex-direction: column;
+
+  overflow: hidden;
+
+  transition:
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.calendar-day:hover {
+  border-color: #d0d7de;
+
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.calendar-day.empty {
+  background-color: #f8f9fa;
+
+  border: none;
+
+  box-shadow: none;
+}
+
+.day-number {
+  font-weight: 600;
+
+  font-size: 0.85rem;
+
+  color: #666666;
+
+  margin-bottom: 6px;
+
+  flex-shrink: 0;
+}
+
+.day-logs {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 4px;
+
+  overflow-y: auto;
+
+  max-height: 92px;
+
+  padding-right: 2px;
+}
+
+/* Scrollbar */
+
+.day-logs::-webkit-scrollbar {
+  width: 4px;
+}
+
+.day-logs::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.day-logs::-webkit-scrollbar-thumb {
+  background-color: #cccccc;
+
+  border-radius: 4px;
+}
+
+.calendar-badge {
+  font-size: 0.7rem;
+
+  padding: 4px 6px;
+
+  border-radius: 5px;
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  gap: 5px;
+
+  min-width: 0;
+
+  border-left: 3px solid transparent;
+
+  box-sizing: border-box;
+}
+
+/* Employee name */
+
+.emp-name {
+  white-space: nowrap;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+
+  max-width: 90px;
+
+  min-width: 0;
+
+  font-weight: 600;
+}
+
+/* Right side of badge */
+
+.badge-info {
+  display: flex;
+
+  align-items: center;
+
+  gap: 4px;
+
+  flex-shrink: 0;
+}
+
+/* Status text */
+
+.badge-status {
+  font-size: 0.62rem;
+
+  font-weight: 600;
+
+  white-space: nowrap;
+}
+
+.calendar-badge.present {
+  background-color: #e6f4ea;
+
+  color: #137333;
+
+  border-left-color: #137333;
+}
+
+.calendar-badge.absent {
+  background-color: #fce8e6;
+
+  color: #c5221f;
+
+  border-left-color: #c5221f;
+}
+
+.calendar-badge.half-day {
+  background-color: #fff4e5;
+
+  color: #b45309;
+
+  border-left-color: #d97706;
+}
+
+.calendar-badge.on-leave {
+  background-color: #e8f0fe;
+
+  color: #1d4ed8;
+
+  border-left-color: #2563eb;
+}
+
+.calendar-badge.holiday {
+  background-color: #f0e9ff;
+
+  color: #6d28d9;
+
+  border-left-color: #7c3aed;
+}
+
+.calendar-badge.weekly-off {
+  background-color: #f1f3f5;
+
+  color: #495057;
+
+  border-left-color: #6b7280;
+}
+
+.badge-late {
+  background-color: #f9ab00;
+
+  color: #ffffff;
+
+  font-size: 0.6rem;
+
+  font-weight: 700;
+
+  padding: 1px 4px;
+
+  border-radius: 3px;
+
+  line-height: 1.2;
+}
+
+.no-employees {
+  font-size: 0.7rem;
+
+  color: #999999;
+
+  text-align: center;
+
+  padding: 8px 2px;
+}
+
+.loading {
+  text-align: center;
+
+  color: #666666;
+
+  padding: 30px 0;
+
+  font-size: 0.9rem;
+}
+
+.error-message {
+  padding: 12px 14px;
+
+  margin: 10px 0;
+
+  background-color: #fce8e6;
+
+  border: 1px solid #f5c2c0;
+
+  border-radius: 6px;
+
+  color: #c5221f;
+
+  font-size: 0.85rem;
+}
+
+.employee-filter {
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  font-size: 0.9rem;
+
+  color: #555555;
+}
+
+.employee-filter label {
+  font-weight: 600;
+}
+
+.employee-filter select {
+  padding: 6px 12px;
+
+  border-radius: 6px;
+
+  border: 1px solid #cccccc;
+
+  background-color: #ffffff;
+
+  font-size: 0.875rem;
+
+  outline: none;
+
+  cursor: pointer;
+
+  transition: border-color 0.2s ease;
+}
+
+.employee-filter select:focus {
+  border-color: #0066cc;
+}
