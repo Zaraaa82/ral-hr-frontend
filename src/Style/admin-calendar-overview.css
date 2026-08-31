@@ -1,0 +1,519 @@
+/* ==========================================================================
+   Admin Calendar Overview Stylesheet (admin-calendar-overview.css)
+   ========================================================================== */
+
+:root {
+  --admin-dark: #0f172a;
+  --admin-card-bg: #ffffff;
+  --admin-border: #e2e8f0;
+  --admin-bg: #f8fafc;
+  --admin-text-main: #1e293b;
+  --admin-text-muted: #64748b;
+
+  --color-present: #059669;
+  --color-present-bg: #ecfdf5;
+  --color-absent: #e11d48;
+  --color-absent-bg: #fff1f2;
+  --color-late: #d97706;
+  --color-late-bg: #fffbeb;
+  --color-ot: #2563eb;
+  --color-ot-bg: #eff6ff;
+}
+
+.admin-overview-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
+    Cantarell, sans-serif;
+  color: var(--admin-text-main);
+}
+
+/* --- 1. Header Bar --- */
+.overview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.badge-org-overview {
+  background-color: var(--color-ot-bg);
+  color: var(--color-ot);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.overview-header h1 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin: 6px 0 2px 0;
+  color: var(--admin-dark);
+}
+
+.subtext {
+  font-size: 0.875rem;
+  color: var(--admin-text-muted);
+  margin: 0;
+}
+
+.month-picker-pill {
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid var(--admin-border);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  padding: 4px;
+}
+
+.btn-nav {
+  background: transparent;
+  border: none;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--admin-text-main);
+  padding: 6px 14px;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background 0.15s ease;
+}
+
+.btn-nav:hover {
+  background-color: var(--admin-bg);
+}
+
+.current-month-display {
+  font-size: 0.95rem;
+  font-weight: 700;
+  padding: 0 12px;
+  min-width: 150px;
+  text-align: center;
+}
+
+/* --- 2. Executive KPI Cards --- */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.kpi-card {
+  background: #ffffff;
+  border: 1px solid var(--admin-border);
+  border-radius: 14px;
+  padding: 18px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.kpi-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--admin-text-muted);
+}
+
+.kpi-val {
+  font-size: 1.6rem;
+  font-weight: 800;
+  font-family: monospace, sans-serif;
+  color: var(--admin-dark);
+}
+
+.kpi-footer {
+  font-size: 0.75rem;
+  color: var(--admin-text-muted);
+}
+
+.card-present {
+  border-top: 4px solid var(--color-present);
+}
+.card-late {
+  border-top: 4px solid var(--color-late);
+}
+.card-absent {
+  border-top: 4px solid var(--color-absent);
+}
+.card-overtime {
+  border-top: 4px solid var(--color-ot);
+}
+.card-exceptions {
+  border-top: 4px solid #8b5cf6;
+}
+
+/* --- 3. Filter Bar --- */
+.filter-card {
+  background: #ffffff;
+  border: 1px solid var(--admin-border);
+  border-radius: 14px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.filter-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.filter-item label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--admin-text-muted);
+}
+
+.filter-item select {
+  font-family: inherit;
+  font-size: 0.8125rem;
+  padding: 7px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--admin-border);
+  background-color: var(--admin-bg);
+  outline: none;
+  min-width: 160px;
+  cursor: pointer;
+}
+
+.filter-right-actions {
+  margin-left: auto;
+}
+
+.btn-refresh {
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 0.8125rem;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--admin-border);
+  background-color: #ffffff;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-refresh:hover {
+  background-color: var(--admin-bg);
+}
+
+/* --- 4. Calendar Grid --- */
+.calendar-grid-card {
+  background: #ffffff;
+  border: 1px solid var(--admin-border);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.grid-days-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.header-cell {
+  background: var(--admin-dark);
+  color: #ffffff;
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 10px;
+  border-radius: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.grid-month-body {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+}
+
+.day-cell {
+  background: #ffffff;
+  border: 1px solid var(--admin-border);
+  border-radius: 10px;
+  min-height: 110px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.day-cell:hover {
+  border-color: #94a3b8;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  transform: translateY(-1px);
+}
+
+.day-cell.cell-empty {
+  background: #f8fafc50;
+  border-style: dashed;
+  cursor: default;
+}
+
+.day-cell.cell-today {
+  border: 2px solid var(--color-ot);
+}
+
+.cell-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.day-number {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--admin-text-main);
+}
+
+.today-badge {
+  background-color: var(--color-ot);
+  color: #ffffff;
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+
+.cell-record-count {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--admin-text-muted);
+}
+
+.cell-mini-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.mini-pill {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.pill-present {
+  background: var(--color-present-bg);
+  color: var(--color-present);
+}
+.pill-late {
+  background: var(--color-late-bg);
+  color: var(--color-late);
+}
+.pill-absent {
+  background: var(--color-absent-bg);
+  color: var(--color-absent);
+}
+.pill-warn {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+/* --- 5. Day Inspector Drawer / Modal --- */
+.day-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.day-drawer-card {
+  background: #ffffff;
+  width: 100%;
+  max-width: 780px;
+  max-height: 85vh;
+  border-radius: 16px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.drawer-header {
+  background: var(--admin-dark);
+  color: #ffffff;
+  padding: 18px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.drawer-header h2 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.btn-drawer-close {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 1.4rem;
+  cursor: pointer;
+}
+
+.btn-drawer-close:hover {
+  color: #ffffff;
+}
+
+.drawer-body {
+  padding: 20px 24px;
+  overflow-y: auto;
+}
+
+.drawer-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+
+.drawer-table th {
+  background: var(--admin-bg);
+  padding: 10px 12px;
+  text-align: left;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  color: var(--admin-text-muted);
+  border-bottom: 1px solid var(--admin-border);
+}
+
+.drawer-table td {
+  padding: 12px;
+  border-bottom: 1px solid var(--admin-border);
+  vertical-align: middle;
+}
+
+.emp-dept-label {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--admin-text-muted);
+}
+
+.time-stack span {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--admin-text-muted);
+}
+
+.time-stack strong {
+  color: var(--admin-text-main);
+  font-family: monospace;
+}
+
+.status-pill {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 9999px;
+  text-transform: capitalize;
+}
+
+.status-present {
+  background: var(--color-present-bg);
+  color: var(--color-present);
+}
+.status-absent {
+  background: var(--color-absent-bg);
+  color: var(--color-absent);
+}
+.status-half-day {
+  background: var(--color-late-bg);
+  color: var(--color-late);
+}
+
+.drawer-ot-badge {
+  display: inline-block;
+  background: var(--color-ot-bg);
+  color: var(--color-ot);
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-top: 2px;
+}
+
+.flags-flex {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.flag-tag {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.drawer-footer {
+  background: var(--admin-bg);
+  padding: 14px 24px;
+  border-top: 1px solid var(--admin-border);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-drawer-done {
+  background: var(--admin-dark);
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.8125rem;
+  padding: 8px 18px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 900px) {
+  .day-cell {
+    min-height: 80px;
+    padding: 4px;
+  }
+  .cell-record-count {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .overview-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .filter-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .filter-right-actions {
+    margin-left: 0;
+  }
+}
