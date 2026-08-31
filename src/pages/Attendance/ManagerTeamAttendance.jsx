@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "../Style/attendance.css";
+import "../../styles/attendance/attendance.css";
 
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
@@ -202,16 +202,16 @@ export default function ManagerTeamAttendance() {
                     <td>
                       {log.inTime
                         ? new Date(log.inTime).toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })
                         : "--:--"}
                       {" - "}
                       {log.outTime
                         ? new Date(log.outTime).toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })
                         : "--:--"}
                     </td>
                     <td>

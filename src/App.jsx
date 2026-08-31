@@ -6,6 +6,11 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import { useAuth } from "./context/AuthContext";
 import IsAdmin from "./components/IsAdmin";
 
+
+// Services
+import { getCurrentUser, logout } from "./services/authService";
+
+
 // Pages
 import Homepage from "./pages/Homepage";
 import SignInPage from "./pages/SigninPage";
@@ -13,8 +18,6 @@ import Dashboard from "./pages/Dashboard";
 import AdminAttendanceCalendar from "./pages/Attendance/AdminAttendanceCalendar";
 import AddUser from "./pages/Users/AddUser";
 
-// Services
-import { getCurrentUser, logout } from "./services/authService";
 
 // Attendance Pages
 import AttendanceDashboard from "./pages/Attendance/AttendanceDashboard";
@@ -23,8 +26,10 @@ import EmployeeAttendanceHistory from "./pages/Attendance/EmployeeAttendanceHist
 import ManagerTeamAttendance from "./pages/Attendance/ManagerTeamAttendance";
 import HRPendingCorrections from "./pages/AuditLogs/HRPendingCorrections";
 
+
 // Payroll Pages
 import Payslips from "./pages/Payslip/Payslips";
+
 
 function App() {
   return (
@@ -32,23 +37,11 @@ function App() {
       <main>
         <Navbar />
         <Routes>
-          {/* Public Routes */}
-
           <Route path="/" element={<Homepage />} />
-
           <Route path="/sign-in" element={<SignInPage />} />
 
-          {/* User Protected Routes */}
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <IsAdmin>
-                  <Dashboard />
-                </IsAdmin>
-              </ProtectedRoute>
-            }
-          />
+          {/* ADMIN DASHBOARD */}
+          <Route path="/dashboard" element={<ProtectedRoute> <IsAdmin> <Dashboard /> </IsAdmin> </ProtectedRoute>} />
           <Route
             path="/admin/dashboard"
             element={
@@ -59,8 +52,6 @@ function App() {
               </IsAdmin>
             }
           ></Route>
-
-          {/* Admin Routes */}
           <Route
             path="/user/create"
             element={
@@ -72,6 +63,8 @@ function App() {
             }
           ></Route>
 
+
+          {/* ATTENDANCE */}
           <Route
             path="/attendance"
             element={
@@ -100,16 +93,6 @@ function App() {
           />
 
           <Route
-            path="/:id/payslips"
-            element={
-              <ProtectedRoute>
-                <Payslips />
-              </ProtectedRoute>
-            }
-          />
-
-          {/* Manager Protected Routes */}
-          <Route
             path="/manager/team-attendance"
             element={
               <ProtectedRoute requiredRole="Manager">
@@ -118,7 +101,6 @@ function App() {
             }
           />
 
-          {/* HR Admin Protected Routes */}
           <Route
             path="/admin/attendance"
             element={
@@ -133,6 +115,17 @@ function App() {
             element={
               <ProtectedRoute requiredRole="HR Admin">
                 <HRPendingCorrections />
+              </ProtectedRoute>
+            }
+          />
+
+
+          {/* PAYSLIP */}
+          <Route
+            path="/:id/payslips"
+            element={
+              <ProtectedRoute>
+                <Payslips />
               </ProtectedRoute>
             }
           />
@@ -160,6 +153,8 @@ function App() {
               </div>
             }
           />
+
+
         </Routes>
       </main>
     </div>
