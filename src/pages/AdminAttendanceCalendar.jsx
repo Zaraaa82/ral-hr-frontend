@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { io } from "socket.io-client";
-import "../Style/attendance-calendar.css";
+import "../styles/attendance-calendar.css";
 
-const socket = io("http://localhost:5000");
+const socket = io("http://localhost:3000");
 
 const DAYS_OF_WEEK = [
   "Sunday",
