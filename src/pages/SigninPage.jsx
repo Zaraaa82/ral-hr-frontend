@@ -7,12 +7,12 @@ import { signIn } from "../services/authService";
 import { useAuth } from "../context/AuthContext";
 import { useTranslation } from "react-i18next";
 
-const SignInForm = ({}) => {
+const SignInForm = ({ }) => {
   const { setUser } = useAuth();
   const navigate = useNavigate();
   const [error, setError] = useState("");
   const [formData, setFormData] = useState({
-    username: "",
+    workEmail: "",
     password: "",
   });
   const { t } = useTranslation();
@@ -43,13 +43,13 @@ const SignInForm = ({}) => {
       <p className="error">{error}</p>
       <form autoComplete="off" onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="email">{t('auth.signIn.username')}:</label>
+          <label htmlFor="workEmail">{t('Email')}:</label>
           <input
             type="text"
             autoComplete="off"
-            id="username"
-            value={formData.username}
-            name="username"
+            id="workEmail"
+            value={formData.workEmail}
+            name="workEmail"
             onChange={handleChange}
             required
           />

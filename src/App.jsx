@@ -1,16 +1,23 @@
 import { Route, Routes } from "react-router";
+
+// Components
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
+import { useAuth } from "./context/AuthContext";
+import IsAdmin from "./components/IsAdmin";
 
-// Public Pages
+// Pages
 import Homepage from "./pages/Homepage";
-import SignupPage from "./pages/SignupPage";
 import SignInPage from "./pages/SigninPage";
 import Dashboard from "./pages/Dashboard";
+import AdminAttendanceCalendar from "./pages/AdminAttendanceCalendar";
+import AddUser from './pages/Users/AddUser'
+
+// Services
+import { getCurrentUser, logout } from "./services/authService";
 
 // Attendance Pages
 import AttendanceDashboard from "./pages/AttendanceDashboard";
-import AdminAttendanceCalendar from "./pages/AdminCalendarOverview";
 import AttendancePunch from "./pages/AttendancePunch";
 import EmployeeAttendanceHistory from "./pages/EmployeeAttendanceHistory";
 import ManagerTeamAttendance from "./pages/ManagerTeamAttendance";
@@ -22,13 +29,14 @@ import Payslips from "./pages/Payslips";
 function App() {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
-      <Navbar />
-
       <main>
+        <Navbar />
         <Routes>
           {/* Public Routes */}
+
           <Route path="/" element={<Homepage />} />
-          <Route path="/sign-up" element={<SignupPage />} />
+
+
           <Route path="/sign-in" element={<SignInPage />} />
 
           {/* User Protected Routes */}
@@ -36,10 +44,30 @@ function App() {
             path="/dashboard"
             element={
               <ProtectedRoute>
-                <Dashboard />
+                <IsAdmin>
+                  <Dashboard />
+                </IsAdmin>
               </ProtectedRoute>
             }
           />
+          <Route path='/admin/dashboard' element={
+            <IsAdmin>
+              <ProtectedRoute requiredRole="admin">
+                <AdminAttendanceCalendar />
+              </ProtectedRoute>
+            </IsAdmin>
+          }></Route>
+
+          {/* Admin Routes */}
+          <Route path='/user/create' element={
+            <IsAdmin>
+              <ProtectedRoute requiredRole="admin">
+                <AddUser />
+              </ProtectedRoute>
+            </IsAdmin>
+          }>
+
+          </Route>
 
           <Route
             path="/attendance"

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "../Style/attendance.css";
+import "../styles/attendance.css";
 
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";

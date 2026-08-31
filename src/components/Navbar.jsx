@@ -9,14 +9,14 @@ function Navbar() {
   const { logout, user} = useAuth()
   return (
     <nav>
-      <Link to='/'>{t('nav.home')}</Link>
+      <Link to='/dashboard'>{t('nav.home')}</Link>
       {user 
       ? 
       (<>
       <button onClick={logout}>{t('nav.signOut')}</button>
       </>) : 
       (<>
-        <Link to='/sign-up'>{t('nav.signUp')}</Link>
+        {/* <Link to='/sign-up'>{t('nav.signUp')}</Link> */}
         <Link to='/sign-in'>{t('nav.signIn')}</Link>
       </>)}
     <LanguageSwitcher />
