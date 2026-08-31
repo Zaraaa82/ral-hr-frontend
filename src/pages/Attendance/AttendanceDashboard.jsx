@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import AttendancePunch from "./AttendancePunch";
-import EmployeeAttendanceHistory from "./EmployeeAttendanceHistory";
-import ManagerTeamAttendance from "./ManagerTeamAttendance";
-import HRPendingCorrections from "./HRPendingCorrections";
-import AdminAttendanceCalendar from "./AdminCalendarOverview";
-import "../Style/attendance.css";
+import EmployeeAttendanceHistory from "../Attendance/EmployeeAttendanceHistory";
+import ManagerTeamAttendance from "../Attendance/ManagerTeamAttendance";
+import HRPendingCorrections from "../AuditLogs/HRPendingCorrections";
+import AdminAttendanceCalendar from "../Attendance/AdminAttendanceCalendar";
+import "../../styles/attendance/attendance.css";
 
 export default function AttendanceDashboard({ userRole = "HR Admin" }) {
   const [activeTab, setActiveTab] = useState("punch");

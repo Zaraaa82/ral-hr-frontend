@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { io } from "socket.io-client";
-import "../styles/attendance-calendar.css";
+import "../../styles/attendance/attendance-calendar.css";
 
 const socket = io("http://localhost:3000");
 
@@ -378,8 +378,8 @@ function AdminAttendanceCalendar() {
 
   const calendarEmployees = selectedEmployee
     ? filteredEmployees.filter(
-        (employee) => employee._id?.toString() === selectedEmployee.toString(),
-      )
+      (employee) => employee._id?.toString() === selectedEmployee.toString(),
+    )
     : filteredEmployees;
 
   return (
@@ -542,13 +542,12 @@ function AdminAttendanceCalendar() {
                         <div
                           key={`${employee._id}-${day}`}
                           className={`calendar-badge ${statusClass}`}
-                          title={`${employeeName} - ${status}${
-                            attendance
+                          title={`${employeeName} - ${status}${attendance
                               ? ` | In: ${formatTime(
-                                  attendance.inTime,
-                                )} | Out: ${formatTime(attendance.outTime)}`
+                                attendance.inTime,
+                              )} | Out: ${formatTime(attendance.outTime)}`
                               : ""
-                          }`}
+                            }`}
                         >
                           <span className="emp-name">{employeeName}</span>
 

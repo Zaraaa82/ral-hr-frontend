@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import "../styles/payslip.css";
-import { useAuth } from "../context/AuthContext";
+import "../../styles/payslip/payslip.css";
+import { useAuth } from "../../context/AuthContext";
 
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
@@ -594,16 +594,16 @@ function Payslips() {
                     {Number(
                       selectedPayslip.deductionBreakdown.otherDeductions,
                     ) > 0 && (
-                      <div className="salary-row">
-                        <span>Other Deductions</span>
-                        <strong>
-                          {formatMoney(
-                            selectedPayslip.deductionBreakdown.otherDeductions,
-                          )}{" "}
-                          BHD
-                        </strong>
-                      </div>
-                    )}
+                        <div className="salary-row">
+                          <span>Other Deductions</span>
+                          <strong>
+                            {formatMoney(
+                              selectedPayslip.deductionBreakdown.otherDeductions,
+                            )}{" "}
+                            BHD
+                          </strong>
+                        </div>
+                      )}
                   </>
                 )}
                 <div className="salary-row total">
@@ -615,16 +615,16 @@ function Payslips() {
               {/* Unrecovered Deductions Alert */}
               {selectedPayslip.deductionBreakdown?.unrecoveredDeductions >
                 0 && (
-                <div className="unrecovered-notice">
-                  Note: Unrecovered deductions exceeding Gross Salary:{" "}
-                  <strong>
-                    {formatMoney(
-                      selectedPayslip.deductionBreakdown.unrecoveredDeductions,
-                    )}{" "}
-                    BHD
-                  </strong>
-                </div>
-              )}
+                  <div className="unrecovered-notice">
+                    Note: Unrecovered deductions exceeding Gross Salary:{" "}
+                    <strong>
+                      {formatMoney(
+                        selectedPayslip.deductionBreakdown.unrecoveredDeductions,
+                      )}{" "}
+                      BHD
+                    </strong>
+                  </div>
+                )}
 
               {/* Net Salary Total */}
               <div className="net-salary-box">
