@@ -1,3 +1,4 @@
+import React from "react";
 import { Route, Routes } from "react-router";
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -6,7 +7,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Homepage from "./pages/Homepage";
 import SignupPage from "./pages/SignupPage";
 import SignInPage from "./pages/SigninPage";
-import Dashboard from "./pages/Dashboard";
+import Dashboard from "./pages/EmployeePersonalDashboard";
 
 // Attendance Pages
 import AttendanceDashboard from "./pages/AttendanceDashboard";
@@ -35,18 +36,18 @@ function App() {
           <Route
             path="/dashboard"
             element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
+              //<ProtectedRoute>
+              <Dashboard />
+              // </ProtectedRoute>
             }
           />
 
           <Route
             path="/attendance"
             element={
-              <ProtectedRoute>
-                <AttendanceDashboard />
-              </ProtectedRoute>
+              //<ProtectedRoute>
+              <AttendanceDashboard />
+              //</ProtectedRoute>
             }
           />
 
