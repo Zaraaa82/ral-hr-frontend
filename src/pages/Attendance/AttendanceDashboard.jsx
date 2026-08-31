@@ -4,7 +4,7 @@ import EmployeeAttendanceHistory from "./EmployeeAttendanceHistory";
 import ManagerTeamAttendance from "./ManagerTeamAttendance";
 import HRPendingCorrections from "./HRPendingCorrections";
 import AdminAttendanceCalendar from "./AdminCalendarOverview";
-import "../styles/attendance.css";
+import "../Style/attendance.css";
 
 export default function AttendanceDashboard({ userRole = "HR Admin" }) {
   const [activeTab, setActiveTab] = useState("punch");
