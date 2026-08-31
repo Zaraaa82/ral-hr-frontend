@@ -2,29 +2,6 @@ import React, { useEffect, useState } from 'react'
 import { createUser, allManager } from '../../services/userService'
 import { getAllDepartments } from '../../services/departmentService'
 import { useNavigate } from 'react-router'
-import { Button } from "@/components/ui/button"
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card"
-import {
-    Field,
-    FieldDescription,
-    FieldGroup,
-    FieldLabel,
-} from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
-import { Checkbox } from "@/components/ui/checkbox"
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
 
 function AddUser() {
     const [departments, setDepartments] = useState([])

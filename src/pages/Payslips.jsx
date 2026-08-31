@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import "../style/payslip.css";
+import "../styles/payslip.css";
 import { useAuth } from "../context/AuthContext";
 
 const API_BASE_URL =
