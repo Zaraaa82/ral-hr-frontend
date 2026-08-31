@@ -10,21 +10,21 @@ import IsAdmin from "./components/IsAdmin";
 import Homepage from "./pages/Homepage";
 import SignInPage from "./pages/SigninPage";
 import Dashboard from "./pages/Dashboard";
-import AdminAttendanceCalendar from "./pages/AdminAttendanceCalendar";
-import AddUser from './pages/Users/AddUser'
+import AdminAttendanceCalendar from "./pages/Attendance/AdminAttendanceCalendar";
+import AddUser from "./pages/Users/AddUser";
 
 // Services
 import { getCurrentUser, logout } from "./services/authService";
 
 // Attendance Pages
-import AttendanceDashboard from "./pages/AttendanceDashboard";
-import AttendancePunch from "./pages/AttendancePunch";
-import EmployeeAttendanceHistory from "./pages/EmployeeAttendanceHistory";
-import ManagerTeamAttendance from "./pages/ManagerTeamAttendance";
-import HRPendingCorrections from "./pages/HRPendingCorrections";
+import AttendanceDashboard from "./pages/Attendance/AttendanceDashboard";
+import AttendancePunch from "./pages/Attendance/AttendancePunch";
+import EmployeeAttendanceHistory from "./pages/Attendance/EmployeeAttendanceHistory";
+import ManagerTeamAttendance from "./pages/Attendance/ManagerTeamAttendance";
+import HRPendingCorrections from "./pages/AuditLogs/HRPendingCorrections";
 
 // Payroll Pages
-import Payslips from "./pages/Payslips";
+import Payslips from "./pages/Payslip/Payslips";
 
 function App() {
   return (
@@ -35,7 +35,6 @@ function App() {
           {/* Public Routes */}
 
           <Route path="/" element={<Homepage />} />
-
 
           <Route path="/sign-in" element={<SignInPage />} />
 
@@ -50,24 +49,28 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route path='/admin/dashboard' element={
-            <IsAdmin>
-              <ProtectedRoute requiredRole="admin">
-                <AdminAttendanceCalendar />
-              </ProtectedRoute>
-            </IsAdmin>
-          }></Route>
+          <Route
+            path="/admin/dashboard"
+            element={
+              <IsAdmin>
+                <ProtectedRoute requiredRole="admin">
+                  <AdminAttendanceCalendar />
+                </ProtectedRoute>
+              </IsAdmin>
+            }
+          ></Route>
 
           {/* Admin Routes */}
-          <Route path='/user/create' element={
-            <IsAdmin>
-              <ProtectedRoute requiredRole="admin">
-                <AddUser />
-              </ProtectedRoute>
-            </IsAdmin>
-          }>
-
-          </Route>
+          <Route
+            path="/user/create"
+            element={
+              <IsAdmin>
+                <ProtectedRoute requiredRole="admin">
+                  <AddUser />
+                </ProtectedRoute>
+              </IsAdmin>
+            }
+          ></Route>
 
           <Route
             path="/attendance"
