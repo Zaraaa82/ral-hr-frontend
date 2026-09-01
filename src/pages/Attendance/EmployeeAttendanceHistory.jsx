@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { Calendar, Filter, Edit3, X, Send } from "lucide-react";
 import "../../styles/attendance/EmployeeAttendanceHistory.css";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_BASE_URL = import.meta.env.VITE_BACK_END_SERVER_URL;
 
 export default function EmployeeAttendanceHistory() {
   const [logs, setLogs] = useState([]);
@@ -10,10 +10,6 @@ export default function EmployeeAttendanceHistory() {
   const [endDate, setEndDate] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
-  // =====================================================
-  // CORRECTION REQUEST MODAL
-  // =====================================================
 
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [reqInTime, setReqInTime] = useState("");
@@ -23,10 +19,6 @@ export default function EmployeeAttendanceHistory() {
   const [submittingCorrection, setSubmittingCorrection] = useState(false);
   const [correctionMsg, setCorrectionMsg] = useState("");
 
-  // =====================================================
-  // GET AUTH HEADERS
-  // =====================================================
-
   const getAuthHeaders = () => {
     const token = localStorage.getItem("token");
 
@@ -35,10 +27,6 @@ export default function EmployeeAttendanceHistory() {
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     };
   };
-
-  // =====================================================
-  // FETCH ATTENDANCE LOGS
-  // =====================================================
 
   const fetchLogs = useCallback(async () => {
     try {
@@ -93,17 +81,9 @@ export default function EmployeeAttendanceHistory() {
     }
   }, [startDate, endDate]);
 
-  // =====================================================
-  // INITIAL LOAD
-  // =====================================================
-
   useEffect(() => {
     fetchLogs();
   }, [fetchLogs]);
-
-  // =====================================================
-  // FORMAT HOURS
-  // =====================================================
 
   const formatHours = (minutes) => {
     const numericMinutes = Number(minutes || 0);
@@ -117,10 +97,6 @@ export default function EmployeeAttendanceHistory() {
 
     return `${h}h ${m}m`;
   };
-
-  // =====================================================
-  // FORMAT TIME
-  // =====================================================
 
   const formatTime = (timeIso) => {
     if (!timeIso) {
@@ -139,10 +115,6 @@ export default function EmployeeAttendanceHistory() {
     });
   };
 
-  // =====================================================
-  // OPEN CORRECTION MODAL
-  // =====================================================
-
   const openCorrectionModal = (record) => {
     setSelectedRecord(record);
 
@@ -150,10 +122,6 @@ export default function EmployeeAttendanceHistory() {
     setReqReason("");
 
     setReqStatus(record.status || "Present");
-
-    // ---------------------------------------------------
-    // IN TIME
-    // ---------------------------------------------------
 
     if (record.inTime) {
       const inDate = new Date(record.inTime);
@@ -170,10 +138,6 @@ export default function EmployeeAttendanceHistory() {
     } else {
       setReqInTime("08:00");
     }
-
-    // ---------------------------------------------------
-    // OUT TIME
-    // ---------------------------------------------------
 
     if (record.outTime) {
       const outDate = new Date(record.outTime);
@@ -192,10 +156,6 @@ export default function EmployeeAttendanceHistory() {
     }
   };
 
-  // =====================================================
-  // CLOSE CORRECTION MODAL
-  // =====================================================
-
   const closeCorrectionModal = () => {
     if (submittingCorrection) {
       return;
@@ -209,10 +169,6 @@ export default function EmployeeAttendanceHistory() {
     setCorrectionMsg("");
   };
 
-  // =====================================================
-  // SUBMIT CORRECTION REQUEST
-  // =====================================================
-
   const handleCorrectionSubmit = async (e) => {
     e.preventDefault();
 
@@ -220,18 +176,10 @@ export default function EmployeeAttendanceHistory() {
       return;
     }
 
-    // ---------------------------------------------------
-    // VALIDATE REASON
-    // ---------------------------------------------------
-
     if (!reqReason.trim()) {
       setCorrectionMsg("Please provide a reason for the correction.");
       return;
     }
-
-    // ---------------------------------------------------
-    // VALIDATE TIMES
-    // ---------------------------------------------------
 
     if (!reqInTime || !reqOutTime) {
       setCorrectionMsg(
@@ -244,19 +192,11 @@ export default function EmployeeAttendanceHistory() {
       setSubmittingCorrection(true);
       setCorrectionMsg("");
 
-      // -------------------------------------------------
-      // RECORD DATE
-      // -------------------------------------------------
-
       const recordDate = new Date(selectedRecord.date);
 
       if (Number.isNaN(recordDate.getTime())) {
         throw new Error("Invalid attendance record date.");
       }
-
-      // -------------------------------------------------
-      // PARSE TIMES
-      // -------------------------------------------------
 
       const [inH, inM] = reqInTime.split(":").map(Number);
       const [outH, outM] = reqOutTime.split(":").map(Number);
@@ -270,25 +210,13 @@ export default function EmployeeAttendanceHistory() {
         throw new Error("Invalid requested attendance time.");
       }
 
-      // -------------------------------------------------
-      // CREATE REQUESTED IN TIME
-      // -------------------------------------------------
-
       const requestedInTime = new Date(recordDate);
 
       requestedInTime.setHours(inH, inM, 0, 0);
 
-      // -------------------------------------------------
-      // CREATE REQUESTED OUT TIME
-      // -------------------------------------------------
-
       const requestedOutTime = new Date(recordDate);
 
       requestedOutTime.setHours(outH, outM, 0, 0);
-
-      // -------------------------------------------------
-      // PAYLOAD
-      // -------------------------------------------------
 
       const payload = {
         requestedInTime: requestedInTime.toISOString(),
@@ -296,10 +224,6 @@ export default function EmployeeAttendanceHistory() {
         requestedStatus: reqStatus,
         reason: reqReason.trim(),
       };
-
-      // -------------------------------------------------
-      // API REQUEST
-      // -------------------------------------------------
 
       const res = await fetch(
         `${API_BASE_URL}/attendance/${selectedRecord._id}/correction`,
@@ -318,10 +242,6 @@ export default function EmployeeAttendanceHistory() {
         data = {};
       }
 
-      // -------------------------------------------------
-      // ERROR HANDLING
-      // -------------------------------------------------
-
       if (!res.ok) {
         throw new Error(
           data.message ||
@@ -329,16 +249,10 @@ export default function EmployeeAttendanceHistory() {
         );
       }
 
-      // -------------------------------------------------
-      // SUCCESS
-      // -------------------------------------------------
-
       setCorrectionMsg("Correction request submitted for HR review!");
 
-      // Refresh attendance records
       await fetchLogs();
 
-      // Close modal after short delay
       setTimeout(() => {
         setSelectedRecord(null);
         setReqInTime("");
@@ -355,10 +269,6 @@ export default function EmployeeAttendanceHistory() {
       setSubmittingCorrection(false);
     }
   };
-
-  // =====================================================
-  // RENDER
-  // =====================================================
 
   return (
     <div className="att-history-container">
