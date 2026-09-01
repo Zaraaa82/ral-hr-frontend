@@ -30,6 +30,10 @@ import AllDepartments from "./pages/Department/AllDepartments";
 
 // Leave
 import MyLeave from "./pages/Leave/MyLeave";
+import ManagerLeaveRequests from "./pages/Leave/ManagerLeaveRequests";
+import HRLeaveManagement from "./pages/Leave/HRLeaveManagement";
+
+
 
 
 function App() {
@@ -198,6 +202,26 @@ function App() {
                 <MyLeave />
               </ProtectedRoute>}
           />
+
+          {/* Team Leave Requests */}
+          <Route
+            path="/leave/team"
+            element={
+              <ProtectedRoute>
+                <ManagerLeaveRequests/>
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/leave/all"
+            element={
+              <ProtectedRoute>
+                <HRLeaveManagement />
+              </ProtectedRoute>
+            }
+          />
+          
           {/* 404 */}
           <Route
             path="*"

@@ -10,9 +10,12 @@ import {
   Fingerprint,
   History,
   Calendar,
+  Inbox,
   CreditCard,
   LogOut,
   LogIn,
+  PlaneTakeoff,
+  CalendarCheck 
 } from "lucide-react";
 
 
@@ -102,6 +105,23 @@ function Navbar() {
                   Attendance
                 </Link>
 
+                
+
+                <Link
+                  to="/leave"
+                  className={linkStyle("/leave")}
+                >
+                  <CalendarCheck  size={18} />
+                  My Leave Requests
+                </Link>
+                <Link
+                  to="/leave/all"
+                  className={linkStyle("/leave/all")}
+                >
+                  <Inbox size={18} />
+                  Leave Requests Management
+                </Link>
+
               </>
             )}
 
@@ -130,6 +150,13 @@ function Navbar() {
                 >
                   <History size={18} />
                   My Attendance
+                </Link>
+                <Link
+                  to="/leave"
+                  className={linkStyle("/leave")}
+                >
+                  <CalendarCheck  size={18} />
+                  My Leave Requests
                 </Link>
 
                 <Link
@@ -176,6 +203,22 @@ function Navbar() {
                 >
                   <Users size={18} />
                   Team Attendance
+                </Link>
+
+                <Link
+                  to="/leave"
+                  className={linkStyle("/leave")}
+                >
+                  <CalendarCheck  size={18} />
+                  My Leave Requests
+                </Link>
+
+                <Link
+                  to="/leave/team"
+                  className={linkStyle("/manager/team-leave-requests")}
+                >
+                  <Inbox size={18} />
+                  Team Leave Requests
                 </Link>
 
                 <Link
