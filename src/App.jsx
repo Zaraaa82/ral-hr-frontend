@@ -28,6 +28,10 @@ import Payslips from "./pages/Payslip/Payslips";
 import AddDepartment from "./pages/Department/AddDepartment";
 import AllDepartments from "./pages/Department/AllDepartments";
 
+// Leave
+import MyLeave from "./pages/Leave/MyLeave";
+
+
 function App() {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
@@ -186,7 +190,14 @@ function App() {
               </ProtectedRoute>
             }
           />
-
+          {/* LEAVE */}
+          <Route
+            path="/leave"
+            element={
+              <ProtectedRoute>
+                <MyLeave />
+              </ProtectedRoute>}
+          />
           {/* 404 */}
           <Route
             path="*"
