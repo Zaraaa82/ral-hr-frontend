@@ -1,8 +1,8 @@
 import api from './api';
 
-async function createDocument(){
+async function createDocument(data){
         try{
-        const response = await api.post(`/docs`);
+        const response = await api.post(`/docs`, data);
         return response.data;
 
     }catch(error){
