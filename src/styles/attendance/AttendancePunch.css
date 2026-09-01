@@ -1,0 +1,339 @@
+/* Scoped Wrapper to beat Tailwind Specificity */
+.punch-terminal-wrapper .punch-terminal-card {
+  background-color: #ffffff;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  max-width: 42rem;
+  margin-left: auto;
+  margin-right: auto;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+}
+
+@media (min-width: 640px) {
+  .punch-terminal-wrapper .punch-terminal-card {
+    padding: 1.75rem;
+  }
+}
+
+/* Header */
+.punch-terminal-wrapper .punch-header {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+@media (min-width: 640px) {
+  .punch-terminal-wrapper .punch-header {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.punch-terminal-wrapper .punch-header-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.punch-terminal-wrapper .punch-live-dot-container {
+  position: relative;
+  display: flex;
+  height: 0.625rem;
+  width: 0.625rem;
+}
+
+.punch-terminal-wrapper .punch-live-dot-ping {
+  animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+  position: absolute;
+  display: inline-flex;
+  height: 100%;
+  width: 100%;
+  border-radius: 9999px;
+  background-color: #34d399;
+  opacity: 0.75;
+}
+
+.punch-terminal-wrapper .punch-live-dot {
+  position: relative;
+  display: inline-flex;
+  border-radius: 9999px;
+  height: 0.625rem;
+  width: 0.625rem;
+  background-color: #10b981;
+}
+
+.punch-terminal-wrapper .punch-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #0f172a;
+  letter-spacing: -0.015em;
+  margin: 0;
+}
+
+@media (min-width: 640px) {
+  .punch-terminal-wrapper .punch-title {
+    font-size: 1.25rem;
+  }
+}
+
+.punch-terminal-wrapper .punch-subtitle {
+  font-size: 0.75rem;
+  color: #64748b;
+  font-weight: 500;
+  padding-left: 1.25rem;
+  margin-top: 0.25rem;
+}
+
+/* Clock Badge */
+.punch-terminal-wrapper .punch-clock-badge {
+  background-color: #020617;
+  color: #f8fafc;
+  padding: 0.625rem 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid #1e293b;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  align-self: flex-start;
+}
+
+@media (min-width: 640px) {
+  .punch-terminal-wrapper .punch-clock-badge {
+    align-self: center;
+  }
+}
+
+.punch-terminal-wrapper .punch-clock-icon {
+  width: 1rem;
+  height: 1rem;
+  color: #818cf8;
+  flex-shrink: 0;
+}
+
+.punch-terminal-wrapper .punch-clock-time {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: #ffffff;
+  line-height: 1;
+}
+
+.punch-terminal-wrapper .punch-clock-tz {
+  font-size: 0.5625rem;
+  color: #94a3b8;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-top: 0.25rem;
+  display: block;
+}
+
+/* Banners */
+.punch-terminal-wrapper .punch-banner {
+  padding: 0.875rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  margin-top: 1.5rem;
+}
+
+.punch-terminal-wrapper .punch-banner-error {
+  background-color: rgba(255, 241, 242, 0.8);
+  border: 1px solid rgba(254, 205, 211, 0.8);
+  color: #be123c;
+}
+
+.punch-terminal-wrapper .punch-banner-success {
+  background-color: rgba(236, 253, 245, 0.8);
+  border: 1px solid rgba(167, 243, 208, 0.8);
+  color: #047857;
+}
+
+/* Metrics Grid */
+.punch-terminal-wrapper .punch-metrics-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .punch-terminal-wrapper .punch-metrics-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.punch-terminal-wrapper .punch-metric-card {
+  background-color: rgba(248, 250, 252, 0.7);
+  padding: 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(226, 232, 240, 0.6);
+  transition: background-color 0.2s ease;
+}
+
+.punch-terminal-wrapper .punch-metric-card:hover {
+  background-color: #f8fafc;
+}
+
+.punch-terminal-wrapper .punch-metric-label {
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+  font-weight: 600;
+  display: block;
+}
+
+.punch-terminal-wrapper .punch-metric-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1e293b;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  margin-top: 0.25rem;
+}
+
+/* Status Badges */
+.punch-terminal-wrapper .punch-status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.625rem;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-width: 1px;
+  border-style: solid;
+  margin-top: 0.5rem;
+}
+
+.punch-terminal-wrapper .status-completed {
+  background-color: #f1f5f9;
+  color: #334155;
+  border-color: #e2e8f0;
+}
+
+.punch-terminal-wrapper .status-active {
+  background-color: #ecfdf5;
+  color: #047857;
+  border-color: rgba(167, 243, 208, 0.8);
+}
+
+.punch-terminal-wrapper .status-pending {
+  background-color: #fffbeb;
+  color: #b45309;
+  border-color: rgba(253, 230, 138, 0.8);
+}
+
+/* Buttons */
+.punch-terminal-wrapper .punch-actions-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.875rem;
+  padding-top: 0.25rem;
+  margin-top: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .punch-terminal-wrapper .punch-actions-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.punch-terminal-wrapper .punch-btn {
+  padding: 0.875rem 1.25rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.15s ease;
+  border: none;
+}
+
+.punch-terminal-wrapper .punch-btn:active:not(:disabled) {
+  transform: scale(0.99);
+}
+
+.punch-terminal-wrapper .punch-btn-in-active {
+  background-color: #059669;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.punch-terminal-wrapper .punch-btn-in-active:hover {
+  background-color: #047857;
+}
+
+.punch-terminal-wrapper .punch-btn-out-active {
+  background-color: #4f46e5;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.punch-terminal-wrapper .punch-btn-out-active:hover {
+  background-color: #4338ca;
+}
+
+.punch-terminal-wrapper .punch-btn-disabled {
+  background-color: #f1f5f9;
+  color: #94a3b8;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  cursor: not-allowed;
+}
+
+/* Guidelines */
+.punch-terminal-wrapper .punch-guidelines {
+  padding: 1rem;
+  background-color: rgba(248, 250, 252, 0.8);
+  border-radius: 0.75rem;
+  border: 1px solid rgba(226, 232, 240, 0.7);
+  margin-top: 1.5rem;
+}
+
+.punch-terminal-wrapper .punch-guidelines-header {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-weight: 600;
+  font-size: 0.75rem;
+  color: #1e293b;
+}
+
+.punch-terminal-wrapper .punch-guidelines-list {
+  margin-top: 0.375rem;
+  padding-left: 1.25rem;
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.punch-terminal-wrapper .punch-spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes ping {
+  75%,
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
