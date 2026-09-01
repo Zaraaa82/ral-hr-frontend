@@ -1,355 +1,274 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link, useLocation, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
 import LanguageSwitcher from "./LanguageSwitcher";
-import "../styles/Navbar.css";
 
 import {
-  LayoutDashboard,
-  Fingerprint,
-  History,
-  CreditCard,
-  Users,
-  Calendar,
-  LogOut,
-  LogIn,
-  Menu,
-  X,
+    LayoutDashboard,
+    Users,
+    Building2,
+    Fingerprint,
+    History,
+    Calendar,
+    CreditCard,
+    LogOut,
+    LogIn,
 } from "lucide-react";
 
-export default function Navbar() {
-  const { t } = useTranslation();
-  const { user, currentUser, logout } = useAuth();
+function Navbar() {
+    const { t } = useTranslation();
+    const { user, currentUser, logout } = useAuth();
 
-  const activeUser = user || currentUser;
-  const role = activeUser?.role;
-  const isAuthenticated = Boolean(activeUser);
+    const location = useLocation();
+    const navigate = useNavigate();
 
-  // ================= Role Checks =================
-  const isHRAdmin = role === "HR Admin";
-  const isManager = role === "Manager";
+    const activeUser = user || currentUser;
+    const role = activeUser?.role;
 
-  // HR Admin goes to admin dashboard
-  // Everyone else goes to employee attendance
-  const dashboardPath = isHRAdmin ? "/dashboard" : "/attendance";
+    const isAuthenticated = Boolean(activeUser);
+    const isHRAdmin = role === "HR Admin";
+    const isManager = role === "Manager";
 
-  const location = useLocation();
-  const navigate = useNavigate();
+    // Dashboard path based on role
+    const dashboardPath = isHRAdmin ? "/dashboard" : "/attendance";
 
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  // ================= Active Link =================
-  const isActive = (path) => {
-    if (path === "/" && location.pathname === "/") {
-      return true;
+    function handleLogout() {
+        logout();
+        navigate("/sign-in");
     }
 
-    if (path !== "/" && location.pathname.startsWith(path)) {
-      return true;
+    function isActive(path) {
+        return location.pathname === path;
     }
 
-    return false;
-  };
+    function linkStyle(path) {
+        return `
+            flex items-center gap-3 rounded-lg px-4 py-3
+            transition duration-200
+            ${isActive(path)
+                ? "bg-lavender text-ink font-semibold"
+                : "text-lavender hover:bg-white/10"
+            }
+        `;
+    }
 
-  // ================= Logout =================
-  const handleLogout = () => {
-    logout();
-    navigate("/sign-in");
-  };
+    return (
+        <aside className="fixed left-0 top-0 flex h-screen w-64 flex-col bg-ink">
 
-  return (
-    <header className="custom-navbar">
-      <div className="navbar-container">
-        <div className="navbar-row">
-          {/* ================= Logo ================= */}
-          <div className="flex-shrink-0">
-            <Link to={isAuthenticated ? dashboardPath : "/"}>
-              <img
-                src="/logo hr.png"
-                alt="RAL HR Logo"
-                className="navbar-logo"
-              />
-            </Link>
-          </div>
+            {/* ================= LOGO ================= */}
 
-          {/* ================= Desktop Nav Links ================= */}
-          <nav className="nav-links-desktop">
-            {isAuthenticated ? (
-              <>
-                {/* ================= Dashboard ================= */}
+            <div className="border-b border-white/10 px-6 py-6">
+
                 <Link
-                  to={dashboardPath}
-                  className={`nav-link-item ${
-                    isActive(dashboardPath) ? "active" : ""
-                  }`}
+                    to={isAuthenticated ? dashboardPath : "/"}
+                    className="text-2xl font-bold text-lavender"
                 >
-                  <LayoutDashboard className="w-3.5 h-3.5" />
-
-                  <span>{t("nav.dashboard", "Dashboard")}</span>
+                    RAL HR
                 </Link>
 
-                {/* ================= Punch ================= */}
-                <Link
-                  to="/attendance/punch"
-                  className={`nav-link-item ${
-                    isActive("/attendance/punch") ? "active" : ""
-                  }`}
-                >
-                  <Fingerprint className="w-3.5 h-3.5" />
+                <p className="mt-1 text-sm text-lavender/60">
+                    Human Resources
+                </p>
 
-                  <span>{t("nav.punch", "Punch")}</span>
-                </Link>
-
-                {/* ================= Attendance Logs ================= */}
-                <Link
-                  to="/attendance/history"
-                  className={`nav-link-item ${
-                    isActive("/attendance/history") ? "active" : ""
-                  }`}
-                >
-                  <History className="w-3.5 h-3.5" />
-
-                  <span>{t("nav.myAttendance", "Logs")}</span>
-                </Link>
-
-                {/* ================= Payslips ================= */}
-                <Link
-                  to="/payslips"
-                  className={`nav-link-item ${
-                    isActive("/payslips") ? "active" : ""
-                  }`}
-                >
-                  <CreditCard className="w-3.5 h-3.5" />
-
-                  <span>{t("nav.payslips", "Payslips")}</span>
-                </Link>
-
-                {/* ================================================= */}
-                {/* MANAGER ONLY                                      */}
-                {/* ================================================= */}
-
-                {isManager && (
-                  <Link
-                    to="/manager/team-attendance"
-                    className={`nav-link-item team-link ${
-                      isActive("/manager/team-attendance") ? "active" : ""
-                    }`}
-                  >
-                    <Users className="w-3.5 h-3.5" />
-
-                    <span>{t("nav.team", "Team")}</span>
-                  </Link>
-                )}
-
-                {/* ================================================= */}
-                {/* HR ADMIN ONLY                                    */}
-                {/* ================================================= */}
-
-                {isHRAdmin && (
-                  <Link
-                    to="/admin/calendar"
-                    className={`nav-link-item ${
-                      isActive("/admin/calendar") ? "active" : ""
-                    }`}
-                  >
-                    <Calendar className="w-3.5 h-3.5" />
-
-                    <span>{t("nav.adminCalendar", "Admin Calendar")}</span>
-                  </Link>
-                )}
-              </>
-            ) : (
-              /* ================= Logged Out ================= */
-
-              <Link
-                to="/"
-                className={`nav-link-item ${
-                  isActive("/") && location.pathname === "/" ? "active" : ""
-                }`}
-              >
-                {t("nav.home", "Home")}
-              </Link>
-            )}
-          </nav>
-
-          {/* ================= Right Controls ================= */}
-          <div className="right-controls">
-            <LanguageSwitcher />
-
-            {isAuthenticated ? (
-              <div className="user-profile-section">
-                <div className="flex items-center gap-2">
-                  <div className="user-avatar">
-                    {activeUser.fullName?.charAt(0) || "U"}
-                  </div>
-
-                  <div>
-                    <span className="text-xs font-bold text-white block leading-tight">
-                      {activeUser.fullName}
-                    </span>
-
-                    <span className="text-[10px] text-slate-400 font-semibold block">
-                      {activeUser.employeeCode}
-                    </span>
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={handleLogout}
-                  className="sign-out-btn"
-                  title={t("nav.signOut", "Sign Out")}
-                >
-                  <LogOut className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            ) : (
-              <Link to="/sign-in" className="sign-in-btn">
-                <LogIn className="w-3.5 h-3.5" />
-
-                <span>{t("nav.signIn", "Sign In")}</span>
-              </Link>
-            )}
-
-            {/* ================= Mobile Menu Toggle ================= */}
-            <div className="mobile-toggle">
-              <button
-                type="button"
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="mobile-toggle-btn"
-              >
-                {mobileMenuOpen ? (
-                  <X className="w-5 h-5" />
-                ) : (
-                  <Menu className="w-5 h-5" />
-                )}
-              </button>
             </div>
-          </div>
-        </div>
-      </div>
 
-      {/* ========================================================= */}
-      {/* MOBILE DRAWER                                             */}
-      {/* ========================================================= */}
 
-      {mobileMenuOpen && (
-        <div className="mobile-drawer">
-          {isAuthenticated ? (
-            <>
-              {/* ================= Dashboard ================= */}
-              <Link
-                to={dashboardPath}
-                onClick={() => setMobileMenuOpen(false)}
-                className={`mobile-link ${
-                  isActive(dashboardPath) ? "active" : ""
-                }`}
-              >
-                {t("nav.dashboard", "Dashboard")}
-              </Link>
+            {/* ================= NAVIGATION ================= */}
 
-              {/* ================= Punch ================= */}
-              <Link
-                to="/attendance/punch"
-                onClick={() => setMobileMenuOpen(false)}
-                className={`mobile-link ${
-                  isActive("/attendance/punch") ? "active" : ""
-                }`}
-              >
-                {t("nav.punch", "Punch In/Out")}
-              </Link>
+            <nav className="flex-1 overflow-y-auto px-4 py-6">
 
-              {/* ================= Attendance Logs ================= */}
-              <Link
-                to="/attendance/history"
-                onClick={() => setMobileMenuOpen(false)}
-                className={`mobile-link ${
-                  isActive("/attendance/history") ? "active" : ""
-                }`}
-              >
-                {t("nav.myAttendance", "My Logs")}
-              </Link>
+                <p className="mb-3 px-4 text-xs font-semibold uppercase tracking-wider text-lavender/60">
+                    Menu
+                </p>
 
-              {/* ================= Payslips ================= */}
-              <Link
-                to="/payslips"
-                onClick={() => setMobileMenuOpen(false)}
-                className={`mobile-link ${
-                  isActive("/payslips") ? "active" : ""
-                }`}
-              >
-                {t("nav.payslips", "Payslips")}
-              </Link>
 
-              {/* ================================================= */}
-              {/* MANAGER MOBILE ONLY                              */}
-              {/* ================================================= */}
+                {/* ================= NOT LOGGED IN ================= */}
 
-              {isManager && (
-                <Link
-                  to="/manager/team-attendance"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={`mobile-link team-mobile ${
-                    isActive("/manager/team-attendance") ? "active" : ""
-                  }`}
-                >
-                  {t("nav.team", "Team Attendance")}
-                </Link>
-              )}
+                {!isAuthenticated && (
 
-              {/* ================================================= */}
-              {/* HR ADMIN MOBILE ONLY                            */}
-              {/* ================================================= */}
+                    <Link
+                        to="/sign-in"
+                        className={linkStyle("/sign-in")}
+                    >
+                        <LogIn size={18} />
 
-              {isHRAdmin && (
-                <Link
-                  to="/admin/calendar"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={`mobile-link ${
-                    isActive("/admin/calendar") ? "active" : ""
-                  }`}
-                >
-                  {t("nav.adminCalendar", "Admin Calendar")}
-                </Link>
-              )}
+                        {t("nav.signIn", "Sign In")}
+                    </Link>
 
-              {/* ================= User / Logout ================= */}
+                )}
 
-              <div className="pt-3 border-t border-slate-700 flex items-center justify-between">
-                <div>
-                  <span className="text-xs font-bold text-white block">
-                    {activeUser.fullName}
-                  </span>
 
-                  <span className="text-[10px] text-slate-400 font-medium">
-                    {activeUser.employeeCode}
-                  </span>
-                </div>
+                {/* ================= LOGGED IN ================= */}
 
-                <button
-                  type="button"
-                  onClick={() => {
-                    handleLogout();
-                    setMobileMenuOpen(false);
-                  }}
-                  className="px-3 py-1 bg-rose-500/20 text-rose-300 rounded-lg text-xs font-bold cursor-pointer"
-                >
-                  {t("nav.signOut", "Sign Out")}
-                </button>
-              </div>
-            </>
-          ) : (
-            <Link
-              to="/sign-in"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block w-full text-center py-2 bg-sky-600 text-white rounded-lg text-xs font-semibold"
-            >
-              {t("nav.signIn", "Sign In")}
-            </Link>
-          )}
-        </div>
-      )}
-    </header>
-  );
-}
+                {isAuthenticated && (
+
+                    <>
+
+                        {/* Dashboard */}
+
+                        <Link
+                            to={dashboardPath}
+                            className={linkStyle(dashboardPath)}
+                        >
+                            <LayoutDashboard size={18} />
+
+                            {t("nav.dashboard", "Dashboard")}
+                        </Link>
+
+
+                        {/* ================= HR ADMIN ================= */}
+
+                        {isHRAdmin && (
+
+                            <>
+
+                                {/* Employees */}
+
+                                <Link
+                                    to="/user/all"
+                                    className={linkStyle("/user/all")}
+                                >
+                                    <Users size={18} />
+
+                                    Employees
+                                </Link>
+
+
+                                {/* Departments */}
+
+                                <Link
+                                    to="/dep/all"
+                                    className={linkStyle("/dep/all")}
+                                >
+                                    <Building2 size={18} />
+
+                                    Departments
+                                </Link>
+
+
+                                {/* Admin Attendance */}
+
+                                <Link
+                                    to="/admin/attendance"
+                                    className={linkStyle("/admin/attendance")}
+                                >
+                                    <Calendar size={18} />
+
+                                    Attendance
+                                </Link>
+
+                            </>
+
+                        )}
+
+
+                        {/* ================= EMPLOYEE / MANAGER ================= */}
+
+                        {!isHRAdmin && (
+
+                            <>
+
+                                {/* Punch */}
+
+                                <Link
+                                    to="/attendance/punch"
+                                    className={linkStyle("/attendance/punch")}
+                                >
+                                    <Fingerprint size={18} />
+
+                                    {t("nav.punch", "Punch In / Out")}
+                                </Link>
+
+
+                                {/* Attendance History */}
+
+                                <Link
+                                    to="/attendance/history"
+                                    className={linkStyle("/attendance/history")}
+                                >
+                                    <History size={18} />
+
+                                    {t("nav.myAttendance", "My Attendance")}
+                                </Link>
+
+
+                                {/* Payslips */}
+
+                                <Link
+                                    to={`/${activeUser?._id}/payslips`}
+                                    className={linkStyle(
+                                        `/${activeUser?._id}/payslips`
+                                    )}
+                                >
+                                    <CreditCard size={18} />
+
+                                    {t("nav.payslips", "Payslips")}
+                                </Link>
+
+                            </>
+
+                        )}
+
+
+                        {/* ================= MANAGER ================= */}
+
+                        {isManager && (
+
+                            <>
+
+                                <p className="mb-3 mt-6 px-4 text-xs font-semibold uppercase tracking-wider text-lavender/60">
+                                    Manager
+                                </p>
+
+
+                                <Link
+                                    to="/manager/team-attendance"
+                                    className={linkStyle(
+                                        "/manager/team-attendance"
+                                    )}
+                                >
+                                    <Users size={18} />
+
+                                    Team Attendance
+                                </Link>
+
+                            </>
+
+                        )}
+
+                    </>
+
+                )}
+
+            </nav>
+
+
+            {/* ================= USER / FOOTER ================= */}
+
+            <div className="border-t border-white/10 p-4">
+
+                {/* User Information */}
+
+                {isAuthenticated && (
+
+                    <div className="mb-4 rounded-lg bg-white/5 p-3">
+
+                        <p className="truncate text-sm font-semibold text-white">
+                            {activeUser?.fullName}
+                        </p>
+
+                        <p className="mt-1 text-xs text-lavender/60">
+                            {activeUser?.employeeCode}
+                        </p>
+
+                        <p className="mt-1 text-xs text-lavender/80">
+                            {activeUser?.role}
+                        </p>
+
+                    </div>
+
+                )}
+
+
+               
