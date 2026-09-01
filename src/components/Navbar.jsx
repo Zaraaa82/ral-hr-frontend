@@ -13,12 +13,15 @@ import {
   CreditCard,
   LogOut,
   LogIn,
+  CheckSquare,
+  Shield,
+  Clock,
 } from "lucide-react";
 
 function Navbar() {
   const { t } = useTranslation();
-  const { user, logout } = useAuth();
-
+  const { user, currentUser, logout } = useAuth();
+  const activeUser = user || currentUser;
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -33,6 +36,7 @@ function Navbar() {
 
     return false;
   };
+
   function handleLogout() {
     logout();
     navigate("/sign-in");
@@ -106,8 +110,25 @@ function Navbar() {
                   to="/attendance/history"
                   className={linkStyle("/attendance/history")}
                 >
-                  <History size={18} />
-                  <span>{t("nav.myAttendance", "Logs")}</span>
+                  <History className="w-4 h-4" />
+                  <span>{t("nav.myAttendance", "My Logs")}</span>
+                </Link>
+
+                <Link
+                  to="/admin/attendance/corrections"
+                  className={linkStyle("/admin/attendance/corrections")}
+                >
+                  <CheckSquare className="w-4 h-4" />
+                  <span>{t("nav.corrections", "Corrections Queue")}</span>
+                </Link>
+                <Link
+                  to="/admin/audit-logs"
+                  className={linkStyle("/admin/audit-logs")}
+                >
+                  <Shield className="w-4 h-4" />
+                  <span>
+                    {t?.("nav.auditLogs", "Audit Trail") || "Audit Trail"}
+                  </span>
                 </Link>
 
                 <Link to="/payslips" className={linkStyle("/payslips")}>
@@ -139,18 +160,10 @@ function Navbar() {
                   <History size={18} />
                   My Attendance
                 </Link>
-
-                <Link
-                  to={`/${user._id}/payslips`}
-                  className={linkStyle(`/${user._id}/payslips`)}
-                >
-                  <CreditCard size={18} />
-                  Payslips
-                </Link>
               </>
             )}
 
-            {user.role === "Manager" && (
+            {(user.role === "Manager" || user.role === "manager") && (
               <>
                 <Link to="/attendance" className={linkStyle("/attendance")}>
                   <LayoutDashboard size={18} />
@@ -177,16 +190,18 @@ function Navbar() {
                   to="/manager/team-attendance"
                   className={linkStyle("/manager/team-attendance")}
                 >
-                  <Users size={18} />
-                  Team Attendance
+                  <Users className="w-4 h-4 text-emerald-400" />
+                  <span className="text-emerald-300 font-semibold">
+                    {t("nav.teamAttendance", "Team Attendance")}
+                  </span>
                 </Link>
 
                 <Link
-                  to={`/${user._id}/payslips`}
-                  className={linkStyle(`/${user._id}/payslips`)}
+                  to={`/${activeUser?._id}/payslips`}
+                  className={linkStyle(`/${activeUser?._id}/payslips`)}
                 >
-                  <CreditCard size={18} />
-                  Payslips
+                  <CreditCard className="w-4 h-4" />
+                  <span>{t("nav.payslips", "My Payslips")}</span>
                 </Link>
               </>
             )}

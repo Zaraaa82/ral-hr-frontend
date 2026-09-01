@@ -4,7 +4,7 @@ import { Routes, Route, Link } from "react-router";
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
 import IsAdmin from "./components/IsAdmin";
-
+import AuditLogsPage from "./pages/AuditLogs/AuditLogView";
 // User
 import Homepage from "./pages/Homepage";
 import SignInPage from "./pages/SigninPage";
@@ -31,14 +31,12 @@ import AllDepartments from "./pages/Department/AllDepartments";
 function App() {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
-
       {/* Sidebar */}
       <Navbar />
 
       {/* Main content */}
       <main className="ml-64 min-h-screen">
         <Routes>
-
           {/* PUBLIC ROUTES */}
           <Route path="/" element={<Homepage />} />
 
@@ -186,6 +184,54 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/admin/audit-logs"
+            element={
+              <ProtectedRoute>
+                <AuditLogsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/audit-trail"
+            element={
+              <ProtectedRoute>
+                <AuditLogsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/audit"
+            element={
+              <ProtectedRoute>
+                <AuditLogsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/audit-logs"
+            element={
+              <ProtectedRoute>
+                <AuditLogsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/audit-trail"
+            element={
+              <ProtectedRoute>
+                <AuditLogsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/manager/audit-logs"
+            element={
+              <ProtectedRoute>
+                <AuditLogsPage />
+              </ProtectedRoute>
+            }
+          />
 
           {/* 404 */}
           <Route
@@ -193,14 +239,9 @@ function App() {
             element={
               <div className="flex min-h-screen items-center justify-center px-6">
                 <div className="text-center">
+                  <h2 className="text-3xl font-bold">404</h2>
 
-                  <h2 className="text-3xl font-bold">
-                    404
-                  </h2>
-
-                  <p className="mt-2 text-lg font-medium">
-                    Page Not Found
-                  </p>
+                  <p className="mt-2 text-lg font-medium">Page Not Found</p>
 
                   <p className="mt-2 text-sm text-slate-500">
                     The page you are looking for does not exist.
@@ -212,12 +253,10 @@ function App() {
                   >
                     Back to Dashboard
                   </Link>
-
                 </div>
               </div>
             }
           />
-
         </Routes>
       </main>
     </div>
@@ -225,7 +264,6 @@ function App() {
 }
 
 export default App;
-
 
 // import { Routes, Route, Link } from 'react-router'
 
@@ -253,7 +291,6 @@ export default App;
 // // Payroll
 // import Payslips from "./pages/Payslip/Payslips";
 
-
 // // Department
 // import AddDepartment from './pages/Department/AddDepartment';
 // import AllDepartments from './pages/Department/AllDepartments';
@@ -270,7 +307,6 @@ export default App;
 //           <Route path="/" element={<Homepage />} />
 
 //           <Route path="/sign-in" element={<SignInPage />} />
-
 
 //           {/* HR Admin Dashboard */}
 //           <Route
@@ -291,7 +327,6 @@ export default App;
 //               </ProtectedRoute>
 //             }
 //           />
-
 
 //           {/* Create User */}
 //           <Route
@@ -321,7 +356,6 @@ export default App;
 //             }
 //           />
 //           {/* ATTENDANCE */}
-
 
 //           {/* HR Attendance Corrections */}
 //           <Route
@@ -410,7 +444,6 @@ export default App;
 //             }
 //           />
 //           {/* PAYSLIPS */}
-
 
 //           <Route
 //             path="/:id/payslips"
