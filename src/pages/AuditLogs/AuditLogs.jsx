@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+  import.meta.env.VITE_BACK_END_SERVER_URL || "http://localhost:3000";
 
 export default function AuditLogs() {
   const [logs, setLogs] = useState([]);

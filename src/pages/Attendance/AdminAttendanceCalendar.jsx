@@ -3,7 +3,7 @@ import { io } from "socket.io-client";
 import "../../styles/attendance/attendance-calendar.css";
 
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+  import.meta.env.VITE_BACK_END_SERVER_URL || "http://localhost:3000";
 
 const socket = io(API_BASE_URL);
 
@@ -47,10 +47,6 @@ function AdminAttendanceCalendar() {
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth() + 1;
-
-  // =====================================================
-  // HELPERS
-  // =====================================================
 
   const getToken = () => {
     return localStorage.getItem("token");
@@ -129,10 +125,6 @@ function AdminAttendanceCalendar() {
     });
   };
 
-  // =====================================================
-  // FETCH EMPLOYEES
-  // =====================================================
-
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
@@ -171,9 +163,6 @@ function AdminAttendanceCalendar() {
 
     fetchEmployees();
   }, []);
-  // =====================================================
-  // DEPARTMENTS
-  // =====================================================
 
   const departments = useMemo(() => {
     const departmentMap = new Map();
@@ -202,9 +191,7 @@ function AdminAttendanceCalendar() {
     );
   }, [employees]);
 
-  // =====================================================
   // FILTER EMPLOYEES
-  // =====================================================
 
   const filteredEmployees = useMemo(() => {
     if (!selectedDepartment) {
@@ -224,9 +211,7 @@ function AdminAttendanceCalendar() {
     setSelectedEmployee("");
   };
 
-  // =====================================================
   // FETCH MONTHLY ATTENDANCE
-  // =====================================================
 
   const fetchMonthlyLogs = async () => {
     try {
@@ -265,16 +250,6 @@ function AdminAttendanceCalendar() {
         throw new Error(data.message || "Failed to fetch attendance logs.");
       }
 
-      /*
-       * Handle both:
-       *
-       * [...]
-       *
-       * and:
-       *
-       * { logs: [...] }
-       */
-
       if (Array.isArray(data)) {
         setLogs(data);
       } else if (Array.isArray(data.logs)) {
@@ -296,17 +271,13 @@ function AdminAttendanceCalendar() {
     }
   };
 
-  // =====================================================
   // FETCH WHEN MONTH / FILTER CHANGES
-  // =====================================================
 
   useEffect(() => {
     fetchMonthlyLogs();
   }, [year, month, selectedDepartment, selectedEmployee]);
 
-  // =====================================================
   // SOCKET.IO
-  // =====================================================
 
   useEffect(() => {
     const handleClockedIn = ({ attendance: newRecord }) => {
@@ -364,9 +335,7 @@ function AdminAttendanceCalendar() {
     };
   }, [selectedDepartment, selectedEmployee]);
 
-  // =====================================================
   // MONTH NAVIGATION
-  // =====================================================
 
   const handlePrevMonth = () => {
     setCurrentDate(new Date(year, month - 2, 1));
@@ -376,17 +345,11 @@ function AdminAttendanceCalendar() {
     setCurrentDate(new Date(year, month, 1));
   };
 
-  // =====================================================
   // CALENDAR INFORMATION
-  // =====================================================
 
   const daysInMonth = new Date(year, month, 0).getDate();
 
   const firstDayIndex = new Date(year, month - 1, 1).getDay();
-
-  // =====================================================
-  // INDEX LOGS
-  // =====================================================
 
   const logsByEmployeeAndDate = useMemo(() => {
     const map = new Map();
@@ -412,10 +375,6 @@ function AdminAttendanceCalendar() {
     return map;
   }, [logs]);
 
-  // =====================================================
-  // GET ATTENDANCE FOR DAY
-  // =====================================================
-
   const getAttendanceForEmployeeDate = (employee, day) => {
     const employeeId = getEmployeeId(employee);
 
@@ -429,10 +388,6 @@ function AdminAttendanceCalendar() {
 
     return logsByEmployeeAndDate.get(key) || null;
   };
-
-  // =====================================================
-  // DETERMINE STATUS
-  // =====================================================
 
   const getStatusForEmployeeDate = (employee, day) => {
     const attendance = getAttendanceForEmployeeDate(employee, day);
@@ -463,9 +418,6 @@ function AdminAttendanceCalendar() {
     // Friday/Saturday = Weekly Off
     return "Weekly Off";
   };
-  // =====================================================
-  // STATUS CLASS
-  // =====================================================
 
   const getStatusClass = (status) => {
     switch (status) {
@@ -492,19 +444,11 @@ function AdminAttendanceCalendar() {
     }
   };
 
-  // =====================================================
-  // EMPLOYEES SHOWN ON CALENDAR
-  // =====================================================
-
   const calendarEmployees = selectedEmployee
     ? filteredEmployees.filter(
         (employee) => employee._id?.toString() === selectedEmployee.toString(),
       )
     : filteredEmployees;
-
-  // =====================================================
-  // RENDER
-  // =====================================================
 
   return (
     <div className="admin-calendar-container">
@@ -574,29 +518,13 @@ function AdminAttendanceCalendar() {
         </div>
       </div>
 
-      {/* ================================================= */}
-      {/* EMPLOYEE LOADING */}
-      {/* ================================================= */}
-
       {employeesLoading && <p className="loading">Loading employees...</p>}
-
-      {/* ================================================= */}
-      {/* ATTENDANCE LOADING */}
-      {/* ================================================= */}
 
       {!employeesLoading && loading && (
         <p className="loading">Loading calendar...</p>
       )}
 
-      {/* ================================================= */}
-      {/* ERROR */}
-      {/* ================================================= */}
-
       {error && <p className="error-message">{error}</p>}
-
-      {/* ================================================= */}
-      {/* CALENDAR */}
-      {/* ================================================= */}
 
       {!employeesLoading && !loading && !error && (
         <>
