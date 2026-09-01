@@ -16,4 +16,9 @@ async function allManager() {
     return response.data
 }
 
-export { createUser, allUsers, allManager }
+async function getUserById(userId) {
+    const response = await api.get(`/user/${userId}`)
+    return response.data
+}
+
+export { createUser, allUsers, allManager, getUserById }

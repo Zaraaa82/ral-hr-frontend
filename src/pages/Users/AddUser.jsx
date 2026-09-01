@@ -7,6 +7,7 @@ function AddUser() {
     const [departments, setDepartments] = useState([])
     const [managers, setManager] = useState([])
     const [error, setError] = useState('')
+    const [success, setSuccess] = useState('')
 
     const navigate = useNavigate();
 
@@ -48,17 +49,20 @@ function AddUser() {
         fetchDepartments()
     }, [])
 
-    async function handleSubmit(event) {
-        event.preventDefault();
 
-        setError("");
+
+    async function handleSubmit(event) {
+        event.preventDefault()
+
+        setError('')
+        setSuccess('')
 
         try {
-            const createdUser = await createUser(formData);
+            const createdUser = await createUser(formData)
 
-            console.log("Created user:", createdUser);
+            console.log("Created user:", createdUser)
 
-            navigate("/dashboard");
+            setSuccess("Employee created successfully!")
 
             setFormData({
                 fullName: "",
@@ -80,17 +84,22 @@ function AddUser() {
                 workEmail: "",
                 password: "",
                 basicSalaryFils: 0,
-            });
+            })
+
+            // setTimeout(() => {
+            //     navigate("/dashboard")
+            // }, 1500)
 
         } catch (err) {
-            console.log("Error:", err);
+            console.log("Error:", err)
 
             setError(
                 err?.response?.data?.message ||
                 "Failed to create employee."
-            );
+            )
         }
     }
+
     function handleChange(event) {
         const { name, type, value, checked, files } = event.target;
 
@@ -99,365 +108,365 @@ function AddUser() {
             [name]: files ? files[0] : type === "checkbox" ? checked : value,
         }));
     }
-return (
-    <main className="container mx-auto py-10">
-        <Card className="mx-auto w-full max-w-3xl">
-            <CardHeader>
-                <CardTitle>Add Employee</CardTitle>
-                <CardDescription>
-                    Enter the employee's information below.
-                </CardDescription>
-            </CardHeader>
 
-            <CardContent>
-                {error && (
-                    <p className="mb-4 text-sm text-red-500">
-                        {error}
-                    </p>
-                )}
+    return (
+        <main className="min-h-screen bg-gray-100 py-10 px-4">
 
-                <form onSubmit={handleSubmit}>
-                    <FieldGroup>
+            <div className="max-w-5xl mx-auto bg-white rounded-xl shadow-lg p-8">
 
-                        <Field>
-                            <FieldLabel htmlFor="fullName">
-                                Full Name
-                            </FieldLabel>
-                            <Input
-                                id="fullName"
-                                type="text"
-                                name="fullName"
-                                value={formData.fullName}
-                                onChange={handleChange}
-                                required
-                            />
-                        </Field>
+                <h1 className="text-3xl font-bold text-gray-800 mb-8">
+                    Add Employee
+                </h1>
 
-                        <Field>
-                            <FieldLabel htmlFor="cprNumber">
-                                CPR Number
-                            </FieldLabel>
-                            <Input
-                                id="cprNumber"
-                                type="text"
-                                name="cprNumber"
-                                value={formData.cprNumber}
-                                onChange={handleChange}
-                                maxLength={9}
-                                pattern="\d{9}"
-                                required
-                            />
-                            <FieldDescription>
-                                Enter the 9-digit CPR number.
-                            </FieldDescription>
-                        </Field>
+                {
+                    error && (
+                        <p className="mb-6 rounded-md bg-stop/10 border border-stop/30 text-stop px-4 py-3">
+                            {error}
+                        </p>
+                    )
+                }
 
-                        <Field>
-                            <FieldLabel htmlFor="gender">
-                                Gender
-                            </FieldLabel>
+                {
+                    success && (
+                        <p className="mb-6 rounded-md bg-good/10 border border-good/30 text-good px-4 py-3">
+                            {success}
+                        </p>
+                    )
+                }
+                <form
+                    onSubmit={handleSubmit}
+                    className="space-y-8"
+                >
+                    <section>
+                        <h2 className="text-xl font-semibold text-ink mb-4">
+                            Personal Information
+                        </h2>
 
-                            <Select
-                                value={formData.gender}
-                                onValueChange={(value) =>
-                                    setFormData((prev) => ({
-                                        ...prev,
-                                        gender: value,
-                                    }))
-                                }
-                            >
-                                <SelectTrigger id="gender">
-                                    <SelectValue placeholder="Select gender" />
-                                </SelectTrigger>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-                                <SelectContent>
-                                    <SelectItem value="male">
-                                        Male
-                                    </SelectItem>
-                                    <SelectItem value="female">
-                                        Female
-                                    </SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </Field>
+                            {/* Full Name */}
+                            <div>
+                                <label className="block text-sm font-medium text-mid mb-2">
+                                    Full Name
+                                </label>
 
-                        <Field>
-                            <FieldLabel htmlFor="nationality">
-                                Nationality
-                            </FieldLabel>
-                            <Input
-                                id="nationality"
-                                type="text"
-                                name="nationality"
-                                value={formData.nationality}
-                                onChange={handleChange}
-                                required
-                            />
-                        </Field>
+                                <input
+                                    type="text"
+                                    name="fullName"
+                                    value={formData.fullName}
+                                    onChange={handleChange}
+                                    required
+                                    className="w-full border border-rule rounded-lg px-4 py-2 bg-white text-mid outline-none focus:ring-2 focus:ring-lavender"
+                                />
+                            </div>
 
-                        <Field orientation="horizontal">
-                            <Checkbox
-                                id="isBahraini"
-                                checked={formData.isBahraini}
-                                onCheckedChange={(checked) =>
-                                    setFormData((prev) => ({
-                                        ...prev,
-                                        isBahraini: checked,
-                                    }))
-                                }
-                            />
+                            <div>
+                                <label className="block text-sm font-medium text-mid mb-2">
+                                    CPR Number
+                                </label>
 
-                            <FieldLabel
-                                htmlFor="isBahraini"
-                                className="font-normal"
-                            >
-                                Bahraini
-                            </FieldLabel>
-                        </Field>
+                                <input
+                                    type="text"
+                                    name="cprNumber"
+                                    value={formData.cprNumber}
+                                    onChange={handleChange}
+                                    maxLength="9"
+                                    pattern="\d{9}"
+                                    required
+                                    className="w-full border border-rule rounded-lg px-4 py-2 bg-white text-mid outline-none focus:ring-2 focus:ring-lavender"
+                                />
+                            </div>
 
-                        <Field>
-                            <FieldLabel htmlFor="dateOfBirth">
-                                Date of Birth
-                            </FieldLabel>
-                            <Input
-                                id="dateOfBirth"
-                                type="date"
-                                name="dateOfBirth"
-                                value={formData.dateOfBirth}
-                                onChange={handleChange}
-                                required
-                            />
-                        </Field>
+                            <div>
+                                <label className="block text-sm font-medium text-mid mb-2">
+                                    Gender
+                                </label>
 
-                        <Field>
-                            <FieldLabel htmlFor="jobTitle">
-                                Job Title
-                            </FieldLabel>
-                            <Input
-                                id="jobTitle"
-                                type="text"
-                                name="jobTitle"
-                                value={formData.jobTitle}
-                                onChange={handleChange}
-                                required
-                            />
-                        </Field>
+                                <select
+                                    name="gender"
+                                    value={formData.gender}
+                                    onChange={handleChange}
+                                    required
+                                    className="w-full border border-rule rounded-lg px-4 py-2 bg-white text-mid outline-none focus:ring-2 focus:ring-lavender"
+                                >
+                                    <option value="">Select Gender</option>
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                </select>
+                            </div>
 
-                        <Field>
-                            <FieldLabel htmlFor="department">
-                                Department
-                            </FieldLabel>
+                            <div>
+                                <label className="block text-sm font-medium text-mid mb-2">
+                                    Nationality
+                                </label>
 
-                            <Select
-                                value={formData.department}
-                                onValueChange={(value) =>
-                                    setFormData((prev) => ({
-                                        ...prev,
-                                        department: value,
-                                    }))
-                                }
-                            >
-                                <SelectTrigger id="department">
-                                    <SelectValue placeholder="Select department" />
-                                </SelectTrigger>
+                                <input
+                                    type="text"
+                                    name="nationality"
+                                    value={formData.nationality}
+                                    onChange={handleChange}
+                                    required
+                                    className="w-full border border-rule rounded-lg px-4 py-2 bg-white text-mid outline-none focus:ring-2 focus:ring-lavender"
+                                />
+                            </div>
 
-                                <SelectContent>
+                            <div>
+                                <label className="block text-sm font-medium text-mid mb-2">
+                                    Date of Birth
+                                </label>
+
+                                <input
+                                    type="date"
+                                    name="dateOfBirth"
+                                    value={formData.dateOfBirth}
+                                    onChange={handleChange}
+                                    required
+                                    className="w-full border border-rule rounded-lg px-4 py-2 bg-white text-mid outline-none focus:ring-2 focus:ring-lavender"
+                                />
+                            </div>
+
+                            <div className="flex items-center">
+                                <label className="flex items-center gap-3 text-sm font-medium text-mid cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        name="isBahraini"
+                                        checked={formData.isBahraini}
+                                        onChange={handleChange}
+                                        className="w-4 h-4 accent-[#2B1B3D]"
+                                    />
+
+                                    Bahraini
+                                </label>
+                            </div>
+
+                        </div>
+                    </section>
+
+
+                    <section>
+                        <h2 className="text-xl font-semibold text-ink mb-4">
+                            Employment Information
+                        </h2>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                            <div>
+                                <label className="block text-sm font-medium text-mid mb-2">
+                                    Job Title
+                                </label>
+
+                                <input
+                                    type="text"
+                                    name="jobTitle"
+                                    value={formData.jobTitle}
+                                    onChange={handleChange}
+                                    required
+                                    className="w-full border border-rule rounded-lg px-4 py-2 bg-white text-mid outline-none focus:ring-2 focus:ring-lavender"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-mid mb-2">
+                                    Department
+                                </label>
+
+                                <select
+                                    name="department"
+                                    value={formData.department}
+                                    onChange={handleChange}
+                                    required
+                                    className="w-full border border-rule rounded-lg px-4 py-2 bg-white text-mid outline-none focus:ring-2 focus:ring-lavender"
+                                >
+                                    <option value="">Select Department</option>
+
                                     {departments.map((department) => (
-                                        <SelectItem
+                                        <option
                                             key={department._id}
                                             value={department._id}
                                         >
                                             {department.departmentName}
-                                        </SelectItem>
+                                        </option>
                                     ))}
-                                </SelectContent>
-                            </Select>
-                        </Field>
+                                </select>
+                            </div>
 
-                        <Field>
-                            <FieldLabel htmlFor="manager">
-                                Manager
-                            </FieldLabel>
+                            <div>
+                                <label className="block text-sm font-medium text-mid mb-2">
+                                    Manager
+                                </label>
 
-                            <Select
-                                value={formData.manager}
-                                onValueChange={(value) =>
-                                    setFormData((prev) => ({
-                                        ...prev,
-                                        manager: value,
-                                    }))
-                                }
-                            >
-                                <SelectTrigger id="manager">
-                                    <SelectValue placeholder="No Manager" />
-                                </SelectTrigger>
+                                <select
+                                    name="manager"
+                                    value={formData.manager}
+                                    onChange={handleChange}
+                                    className="w-full border border-rule rounded-lg px-4 py-2 bg-white text-mid outline-none focus:ring-2 focus:ring-lavender"
+                                >
+                                    <option value="">No Manager</option>
 
-                                <SelectContent>
                                     {managers.map((manager) => (
-                                        <SelectItem
+                                        <option
                                             key={manager._id}
                                             value={manager._id}
                                         >
                                             {manager.fullName}
-                                        </SelectItem>
+                                        </option>
                                     ))}
-                                </SelectContent>
-                            </Select>
-                        </Field>
+                                </select>
+                            </div>
 
-                        <Field>
-                            <FieldLabel htmlFor="dateOfJoining">
-                                Date of Joining
-                            </FieldLabel>
-                            <Input
-                                id="dateOfJoining"
-                                type="date"
-                                name="dateOfJoining"
-                                value={formData.dateOfJoining}
-                                onChange={handleChange}
-                                required
-                            />
-                        </Field>
+                            <div>
+                                <label className="block text-sm font-medium text-mid mb-2">
+                                    Role
+                                </label>
 
-                        <Field>
-                            <FieldLabel htmlFor="phoneNumber">
-                                Phone Number
-                            </FieldLabel>
-                            <Input
-                                id="phoneNumber"
-                                type="tel"
-                                name="phoneNumber"
-                                value={formData.phoneNumber}
-                                onChange={handleChange}
-                                required
-                            />
-                        </Field>
+                                <select
+                                    name="role"
+                                    value={formData.role}
+                                    onChange={handleChange}
+                                    required
+                                    className="w-full border border-rule rounded-lg px-4 py-2 bg-white text-mid outline-none focus:ring-2 focus:ring-lavender"
+                                >
+                                    <option value="">Select Role</option>
+                                    <option value="Employee">Employee</option>
+                                    <option value="Manager">Manager</option>
+                                    <option value="HR Admin">HR Admin</option>
+                                </select>
+                            </div>
 
-                        <Field>
-                            <FieldLabel htmlFor="dateOfLeaving">
-                                Date of Leaving
-                            </FieldLabel>
-                            <Input
-                                id="dateOfLeaving"
-                                type="date"
-                                name="dateOfLeaving"
-                                value={formData.dateOfLeaving}
-                                onChange={handleChange}
-                            />
-                        </Field>
+                            <div>
+                                <label className="block text-sm font-medium text-mid mb-2">
+                                    Date of Joining
+                                </label>
 
-                        <Field>
-                            <FieldLabel htmlFor="status">
-                                Status
-                            </FieldLabel>
+                                <input
+                                    type="date"
+                                    name="dateOfJoining"
+                                    value={formData.dateOfJoining}
+                                    onChange={handleChange}
+                                    required
+                                    className="w-full border border-rule rounded-lg px-4 py-2 bg-white text-mid outline-none focus:ring-2 focus:ring-lavender"
+                                />
+                            </div>
 
-                            <Select
-                                value={formData.status}
-                                onValueChange={(value) =>
-                                    setFormData((prev) => ({
-                                        ...prev,
-                                        status: value,
-                                    }))
-                                }
-                            >
-                                <SelectTrigger id="status">
-                                    <SelectValue />
-                                </SelectTrigger>
+                            <div>
+                                <label className="block text-sm font-medium text-mid mb-2">
+                                    Date of Leaving
+                                </label>
 
-                                <SelectContent>
-                                    <SelectItem value="active">
-                                        Active
-                                    </SelectItem>
-                                    <SelectItem value="deactivated">
-                                        Deactivated
-                                    </SelectItem>
-                                    <SelectItem value="left">
-                                        Left
-                                    </SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </Field>
+                                <input
+                                    type="date"
+                                    name="dateOfLeaving"
+                                    value={formData.dateOfLeaving}
+                                    onChange={handleChange}
+                                    className="w-full border border-rule rounded-lg px-4 py-2 bg-white text-mid outline-none focus:ring-2 focus:ring-lavender"
+                                />
+                            </div>
 
-                        <Field>
-                            <FieldLabel htmlFor="role">
-                                Role
-                            </FieldLabel>
+                            <div>
+                                <label className="block text-sm font-medium text-mid mb-2">
+                                    Status
+                                </label>
 
-                            <Select
-                                value={formData.role}
-                                onValueChange={(value) =>
-                                    setFormData((prev) => ({
-                                        ...prev,
-                                        role: value,
-                                    }))
-                                }
-                            >
-                                <SelectTrigger id="role">
-                                    <SelectValue placeholder="Select role" />
-                                </SelectTrigger>
+                                <select
+                                    name="status"
+                                    value={formData.status}
+                                    onChange={handleChange}
+                                    required
+                                    className="w-full border border-rule rounded-lg px-4 py-2 bg-white text-mid outline-none focus:ring-2 focus:ring-lavender"
+                                >
+                                    <option value="active">Active</option>
+                                    <option value="deactivated">Deactivated</option>
+                                    <option value="left">Left</option>
+                                </select>
+                            </div>
 
-                                <SelectContent>
-                                    <SelectItem value="Employee">
-                                        Employee
-                                    </SelectItem>
-                                    <SelectItem value="Manager">
-                                        Manager
-                                    </SelectItem>
-                                    <SelectItem value="HR Admin">
-                                        HR Admin
-                                    </SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </Field>
+                        </div>
+                    </section>
 
-                        <Field>
-                            <FieldLabel htmlFor="personalEmail">
-                                Personal Email
-                            </FieldLabel>
-                            <Input
-                                id="personalEmail"
-                                type="email"
-                                name="personalEmail"
-                                value={formData.personalEmail}
-                                onChange={handleChange}
-                                required
-                            />
-                        </Field>
 
-                        <Field>
-                            <FieldLabel htmlFor="workEmail">
-                                Work Email
-                            </FieldLabel>
-                            <Input
-                                id="workEmail"
-                                type="email"
-                                name="workEmail"
-                                value={formData.workEmail}
-                                onChange={handleChange}
-                                required
-                            />
-                        </Field>
+                    <section>
+                        <h2 className="text-xl font-semibold text-ink mb-4">
+                            Contact & Account
+                        </h2>
 
-                        <Field>
-                            <FieldLabel htmlFor="password">
-                                Password
-                            </FieldLabel>
-                            <Input
-                                id="password"
-                                type="password"
-                                name="password"
-                                value={formData.password}
-                                onChange={handleChange}
-                                required
-                            />
-                        </Field>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-                        <Field>
-                            <FieldLabel htmlFor="basicSalaryFils">
+                            <div>
+                                <label className="block text-sm font-medium text-mid mb-2">
+                                    Phone Number
+                                </label>
+
+                                <input
+                                    type="tel"
+                                    name="phoneNumber"
+                                    value={formData.phoneNumber}
+                                    onChange={handleChange}
+                                    required
+                                    className="w-full border border-rule rounded-lg px-4 py-2 bg-white text-mid outline-none focus:ring-2 focus:ring-lavender"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-mid mb-2">
+                                    Personal Email
+                                </label>
+
+                                <input
+                                    type="email"
+                                    name="personalEmail"
+                                    value={formData.personalEmail}
+                                    onChange={handleChange}
+                                    required
+                                    className="w-full border border-rule rounded-lg px-4 py-2 bg-white text-mid outline-none focus:ring-2 focus:ring-lavender"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-mid mb-2">
+                                    Work Email
+                                </label>
+
+                                <input
+                                    type="email"
+                                    name="workEmail"
+                                    value={formData.workEmail}
+                                    onChange={handleChange}
+                                    required
+                                    className="w-full border border-rule rounded-lg px-4 py-2 bg-white text-mid outline-none focus:ring-2 focus:ring-lavender"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-mid mb-2">
+                                    Password
+                                </label>
+
+                                <input
+                                    type="password"
+                                    name="password"
+                                    value={formData.password}
+                                    onChange={handleChange}
+                                    required
+                                    className="w-full border border-rule rounded-lg px-4 py-2 bg-white text-mid outline-none focus:ring-2 focus:ring-lavender"
+                                />
+                            </div>
+
+                        </div>
+                    </section>
+
+
+                    <section>
+                        <h2 className="text-xl font-semibold text-ink mb-4">
+                            Compensation
+                        </h2>
+
+                        <div className="max-w-md">
+
+                            <label className="block text-sm font-medium text-mid mb-2">
                                 Basic Salary (Fils)
-                            </FieldLabel>
-                            <Input
-                                id="basicSalaryFils"
+                            </label>
+
+                            <input
                                 type="number"
                                 name="basicSalaryFils"
                                 value={formData.basicSalaryFils}
@@ -465,262 +474,29 @@ return (
                                 min="0"
                                 step="1"
                                 required
+                                className="w-full border border-rule rounded-lg px-4 py-2 bg-white text-mid outline-none focus:ring-2 focus:ring-lavender"
                             />
-                            <FieldDescription>
-                                Enter the basic salary in fils.
-                            </FieldDescription>
-                        </Field>
 
-                        <Button type="submit" className="w-full">
+                        </div>
+                    </section>
+
+
+                    <div className="flex justify-end border-t border-rule pt-6">
+
+                        <button
+                            type="submit"
+                            className="rounded-lg bg-ink px-6 py-3 font-semibold text-lavender transition hover:opacity-90"
+                        >
                             Create Employee
-                        </Button>
+                        </button>
 
-                    </FieldGroup>
+                    </div>
+
                 </form>
-            </CardContent>
-        </Card>
-    </main>
-)
 
-    // return (
-    //     <main>
-    //         <h1>Add Employee</h1>
-    //         {error && (<p style={{ color: "red" }}> {error} </p>)}
-    //         <form onSubmit={handleSubmit}>
-
-    //             <div>
-    //                 <label>Full Name</label>
-    //                 <input
-    //                     type="text"
-    //                     name="fullName"
-    //                     value={formData.fullName}
-    //                     onChange={handleChange}
-    //                     required
-    //                 />
-    //             </div>
-
-    //             <div>
-    //                 <label>CPR Number</label>
-    //                 <input
-    //                     type="text"
-    //                     name="cprNumber"
-    //                     value={formData.cprNumber}
-    //                     onChange={handleChange}
-    //                     maxLength="9"
-    //                     pattern="\d{9}"
-    //                     required
-    //                 />
-    //             </div>
-
-    //             <div>
-    //                 <label>Gender</label>
-    //                 <select
-    //                     name="gender"
-    //                     value={formData.gender}
-    //                     onChange={handleChange}
-    //                     required
-    //                 >
-    //                     <option value="">Select Gender</option>
-    //                     <option value="male">Male</option>
-    //                     <option value="female">Female</option>
-    //                 </select>
-    //             </div>
-
-    //             <div>
-    //                 <label>Nationality</label>
-    //                 <input
-    //                     type="text"
-    //                     name="nationality"
-    //                     value={formData.nationality}
-    //                     onChange={handleChange}
-    //                     required
-    //                 />
-    //             </div>
-
-    //             <div>
-    //                 <label>
-    //                     <input
-    //                         type="checkbox"
-    //                         name="isBahraini"
-    //                         checked={formData.isBahraini}
-    //                         onChange={handleChange}
-    //                     />
-    //                     Bahraini
-    //                 </label>
-    //             </div>
-
-    //             <div>
-    //                 <label>Date of Birth</label>
-    //                 <input
-    //                     type="date"
-    //                     name="dateOfBirth"
-    //                     value={formData.dateOfBirth}
-    //                     onChange={handleChange}
-    //                     required
-    //                 />
-    //             </div>
-
-    //             {/* <div>
-    //                 <label>Employee Code</label>
-    //                 <input
-    //                     type="text"
-    //                     name="employeeCode"
-    //                     value={formData.employeeCode}
-    //                     onChange={handleChange}
-    //                     required
-    //                 />
-    //             </div> */}
-
-    //             <div>
-    //                 <label>Job Title</label>
-    //                 <input
-    //                     type="text"
-    //                     name="jobTitle"
-    //                     value={formData.jobTitle}
-    //                     onChange={handleChange}
-    //                     required
-    //                 />
-    //             </div>
-
-    //             <div>
-    //                 <label>Department</label>
-    //                 <select name="department" value={formData.department} onChange={handleChange} required >
-    //                     <option value=""> Select Department </option>
-    //                     {departments.map((department) =>
-    //                         (<option key={department._id} value={department._id} > {department.departmentName} </option>))} </select> </div>
-
-    //             <div>
-    //                 <label>Manager</label>
-    //                 <select
-    //                     name="manager"
-    //                     value={formData.manager}
-    //                     onChange={handleChange}
-    //                 >
-    //                     <option value="">No Manager</option>
-    //                     {/* Map your managers here */}
-
-    //                     {managers.map((manager) => (
-    //                         <option key={manager._id} value={manager._id}>
-    //                             {manager.fullName}
-    //                         </option>
-    //                     ))}
-
-    //                 </select>
-    //             </div>
-
-    //             <div>
-    //                 <label>Date of Joining</label>
-    //                 <input
-    //                     type="date"
-    //                     name="dateOfJoining"
-    //                     value={formData.dateOfJoining}
-    //                     onChange={handleChange}
-    //                     required
-    //                 />
-    //             </div>
-
-    //             <div>
-    //                 <label>Phone Number</label>
-    //                 <input
-    //                     type="tel"
-    //                     name="phoneNumber"
-    //                     value={formData.phoneNumber}
-    //                     onChange={handleChange}
-    //                     required
-    //                 />
-    //             </div>
-
-    //             <div>
-    //                 <label>Date of Leaving</label>
-    //                 <input
-    //                     type="date"
-    //                     name="dateOfLeaving"
-    //                     value={formData.dateOfLeaving}
-    //                     onChange={handleChange}
-    //                 />
-    //             </div>
-
-    //             <div>
-    //                 <label>Status</label>
-    //                 <select
-    //                     name="status"
-    //                     value={formData.status}
-    //                     onChange={handleChange}
-    //                     required
-    //                 >
-    //                     <option value="active">Active</option>
-    //                     <option value="deactivated">Deactivated</option>
-    //                     <option value="left">Left</option>
-    //                 </select>
-    //             </div>
-
-    //             <div>
-    //                 <label>Role</label>
-    //                 <select
-    //                     name="role"
-    //                     value={formData.role}
-    //                     onChange={handleChange}
-    //                     required
-    //                 >
-    //                     <option value="">Select Role</option>
-    //                     <option value="Employee">Employee</option>
-    //                     <option value="Manager">Manager</option>
-    //                     <option value="HR Admin">HR Admin</option>
-    //                 </select>
-    //             </div>
-
-    //             <div>
-    //                 <label>Personal Email</label>
-    //                 <input
-    //                     type="email"
-    //                     name="personalEmail"
-    //                     value={formData.personalEmail}
-    //                     onChange={handleChange}
-    //                     required
-    //                 />
-    //             </div>
-
-    //             <div>
-    //                 <label>Work Email</label>
-    //                 <input
-    //                     type="email"
-    //                     name="workEmail"
-    //                     value={formData.workEmail}
-    //                     onChange={handleChange}
-    //                     required
-    //                 />
-    //             </div>
-
-    //             <div>
-    //                 <label>Password</label>
-    //                 <input
-    //                     type="password"
-    //                     name="password"
-    //                     value={formData.password}
-    //                     onChange={handleChange}
-    //                     required
-    //                 />
-    //             </div>
-
-    //             <div>
-    //                 <label>Basic Salary (Fils)</label>
-    //                 <input
-    //                     type="number"
-    //                     name="basicSalaryFils"
-    //                     value={formData.basicSalaryFils}
-    //                     onChange={handleChange}
-    //                     min="0"
-    //                     step="1"
-    //                     required
-    //                 />
-    //             </div>
-
-    //             <button type="submit">
-    //                 Create Employee
-    //             </button>
-
-    //         </form>
-    //     </main>)
+            </div>
+        </main>
+    )
 }
 
 export default AddUser

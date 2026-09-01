@@ -1,11 +1,13 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
 import { getCurrentUser, logout } from "../services/authService";
+import { useNavigate } from "react-router";
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+  const navigate = useNavigate();
 
   const [loading, setLoading] = useState(true);
 
@@ -38,6 +40,7 @@ export function AuthProvider({ children }) {
     logout();
 
     setUser(null);
+    navigate("/sign-in");
   }
 
   return (
