@@ -210,6 +210,7 @@ function Navbar() {
           <Link to="/sign-in" className={linkStyle("/sign-in")}>
             {t("nav.signIn")}
           </Link>
+
         )}
       </nav>
 

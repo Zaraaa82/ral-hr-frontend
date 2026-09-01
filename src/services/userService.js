@@ -21,4 +21,20 @@ async function getUserById(userId) {
     return response.data
 }
 
-export { createUser, allUsers, allManager, getUserById }
+async function deactivateUser(userId) {
+    const response = await api.put(
+        `/user/deactivate/${userId}`
+    );
+
+    return response.data;
+}
+
+async function reactivateUser(userId) {
+    const response = await api.put(
+        `/user/reactivate/${userId}`
+    );
+
+    return response.data;
+}
+
+export { createUser, allUsers, allManager, getUserById, deactivateUser, reactivateUser }
