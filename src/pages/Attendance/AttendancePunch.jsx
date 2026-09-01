@@ -1,17 +1,25 @@
 import React, { useState, useEffect } from "react";
-import "../../styles/attendance/attendance.css";
+import {
+  Clock,
+  LogIn,
+  LogOut,
+  CheckCircle2,
+  AlertCircle,
+  Info,
+  Loader2,
+} from "lucide-react";
+import "../../styles/attendance/AttendancePunch.css";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export default function AttendancePunch({ onPunchSuccess }) {
   const [options, setOptions] = useState(null);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [loading, setLoading] = useState(false);
+  const [activeAction, setActiveAction] = useState(null);
   const [error, setError] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
 
-  // Live digital clock ticker
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
@@ -22,7 +30,7 @@ export default function AttendancePunch({ onPunchSuccess }) {
       setError("");
       const res = await fetch(`${API_BASE_URL}/attendance/options`, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
         },
       });
       const data = await res.json();
@@ -30,7 +38,7 @@ export default function AttendancePunch({ onPunchSuccess }) {
         throw new Error(data.message || "Failed to load attendance options.");
       setOptions(data);
     } catch (err) {
-      console.error(err);
+      console.error("fetchOptions error:", err);
       setError(err.message);
     }
   };
@@ -42,6 +50,7 @@ export default function AttendancePunch({ onPunchSuccess }) {
   const handlePunch = async (actionType) => {
     try {
       setLoading(true);
+      setActiveAction(actionType);
       setError("");
       setSuccessMsg("");
 
@@ -51,7 +60,7 @@ export default function AttendancePunch({ onPunchSuccess }) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
         },
       });
 
@@ -66,10 +75,11 @@ export default function AttendancePunch({ onPunchSuccess }) {
       setError(err.message);
     } finally {
       setLoading(false);
+      setActiveAction(null);
     }
   };
 
-  const formatTime = (dateObj) => {
+  const formatClock = (dateObj) => {
     return dateObj.toLocaleTimeString([], {
       hour: "2-digit",
       minute: "2-digit",
@@ -77,92 +87,175 @@ export default function AttendancePunch({ onPunchSuccess }) {
     });
   };
 
+  const formatShortTime = (timeIso) => {
+    if (!timeIso) return "--:--";
+    return new Date(timeIso).toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
+  const isClockInAllowed = Boolean(options?.actions?.clockIn?.allowed);
+  const isClockOutAllowed = Boolean(options?.actions?.clockOut?.allowed);
+
+  const getStatusClass = (hasIn, hasOut) => {
+    if (hasOut) return "status-completed";
+    if (hasIn) return "status-active";
+    return "status-pending";
+  };
+
   return (
-    <div className="attendance-card punch-card">
-      <div className="punch-header">
-        <div>
-          <h3>Daily Attendance Punch</h3>
-          <p className="subtext">
-            {options?.current?.dayType
-              ? `Today: ${options.current.dayType}`
-              : "Company Shift Tracker"}
-          </p>
-        </div>
-        <div className="live-clock">{formatTime(currentTime)}</div>
-      </div>
+    <div className="punch-terminal-wrapper">
+      <div className="punch-terminal-card">
+        {/* Header & Live Ticker */}
+        <div className="punch-header">
+          <div>
+            <div className="punch-header-title-group">
+              <span className="punch-live-dot-container">
+                <span className="punch-live-dot-ping" />
+                <span className="punch-live-dot" />
+              </span>
+              <h3 className="punch-title">Attendance Terminal</h3>
+            </div>
+            <p className="punch-subtitle">
+              {options?.current?.dayType
+                ? `Shift: ${options.current.dayType}`
+                : "Standard Shift (08:00 - 17:00 • 1h Break)"}
+            </p>
+          </div>
 
-      {error && <div className="alert-box error">{error}</div>}
-      {successMsg && <div className="alert-box success">{successMsg}</div>}
+          <div className="punch-clock-badge">
+            <Clock className="punch-clock-icon" />
+            <div>
+              <span className="punch-clock-time">
+                {formatClock(currentTime)}
+              </span>
+              <span className="punch-clock-tz">Asia/Bahrain</span>
+            </div>
+          </div>
+        </div>
 
-      {/* Current Attendance State */}
-      <div className="punch-status-grid">
-        <div className="status-pill-box">
-          <span className="label">Clock In</span>
-          <strong>
-            {options?.attendance?.inTime
-              ? new Date(options.attendance.inTime).toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })
-              : "--:--"}
-          </strong>
+        {/* Feedback Alerts */}
+        {error && (
+          <div className="punch-banner punch-banner-error">
+            <AlertCircle style={{ width: 16, height: 16, flexShrink: 0 }} />
+            <span>{error}</span>
+          </div>
+        )}
+
+        {successMsg && (
+          <div className="punch-banner punch-banner-success">
+            <CheckCircle2 style={{ width: 16, height: 16, flexShrink: 0 }} />
+            <span>{successMsg}</span>
+          </div>
+        )}
+
+        {/* Attendance Metrics Grid */}
+        <div className="punch-metrics-grid">
+          <div className="punch-metric-card">
+            <span className="punch-metric-label">Clock In</span>
+            <div className="punch-metric-value">
+              {formatShortTime(options?.attendance?.inTime)}
+            </div>
+          </div>
+
+          <div className="punch-metric-card">
+            <span className="punch-metric-label">Clock Out</span>
+            <div className="punch-metric-value">
+              {formatShortTime(options?.attendance?.outTime)}
+            </div>
+          </div>
+
+          <div className="punch-metric-card">
+            <span className="punch-metric-label">Current Status</span>
+            <div>
+              <span
+                className={`punch-status-badge ${getStatusClass(
+                  options?.attendance?.inTime,
+                  options?.attendance?.outTime,
+                )}`}
+              >
+                {options?.attendance?.status || "Not Clocked"}
+              </span>
+            </div>
+          </div>
         </div>
-        <div className="status-pill-box">
-          <span className="label">Clock Out</span>
-          <strong>
-            {options?.attendance?.outTime
-              ? new Date(options.attendance.outTime).toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })
-              : "--:--"}
-          </strong>
-        </div>
-        <div className="status-pill-box">
-          <span className="label">Status</span>
-          <span
-            className={`status-badge ${(options?.attendance?.status || "Pending").toLowerCase().replace(" ", "-")}`}
+
+        {/* Action Buttons */}
+        <div className="punch-actions-grid">
+          <button
+            type="button"
+            disabled={loading || !isClockInAllowed}
+            onClick={() => handlePunch("in")}
+            className={`punch-btn ${
+              isClockInAllowed && !loading
+                ? "punch-btn-in-active"
+                : "punch-btn-disabled"
+            }`}
+            title={
+              options?.actions?.clockIn?.reason || "Record your entry time"
+            }
           >
-            {options?.attendance?.status || "Not Clocked"}
-          </span>
-        </div>
-      </div>
-
-      {/* Action Buttons */}
-      <div className="punch-actions">
-        <button
-          className="btn btn-clock-in"
-          disabled={loading || !options?.actions?.clockIn?.allowed}
-          title={options?.actions?.clockIn?.reason || "Record your entry time"}
-          onClick={() => handlePunch("in")}
-        >
-          {loading ? "Processing..." : "Clock In"}
-        </button>
-
-        <button
-          className="btn btn-clock-out"
-          disabled={loading || !options?.actions?.clockOut?.allowed}
-          title={options?.actions?.clockOut?.reason || "Record your exit time"}
-          onClick={() => handlePunch("out")}
-        >
-          {loading ? "Processing..." : "Clock Out"}
-        </button>
-      </div>
-
-      {/* Disabling Reasons Tooltip */}
-      {(!options?.actions?.clockIn?.allowed ||
-        !options?.actions?.clockOut?.allowed) && (
-        <div className="punch-hints">
-          {!options?.actions?.clockIn?.allowed &&
-            options?.actions?.clockIn?.reason && (
-              <p>💡 {options.actions.clockIn.reason}</p>
+            {loading && activeAction === "in" ? (
+              <Loader2
+                className="punch-spinner"
+                style={{ width: 16, height: 16 }}
+              />
+            ) : (
+              <LogIn style={{ width: 16, height: 16 }} />
             )}
-          {!options?.actions?.clockOut?.allowed &&
-            options?.actions?.clockOut?.reason && (
-              <p>💡 {options.actions.clockOut.reason}</p>
+            <span>
+              {loading && activeAction === "in" ? "Clocking In..." : "Clock In"}
+            </span>
+          </button>
+
+          <button
+            type="button"
+            disabled={loading || !isClockOutAllowed}
+            onClick={() => handlePunch("out")}
+            className={`punch-btn ${
+              isClockOutAllowed && !loading
+                ? "punch-btn-out-active"
+                : "punch-btn-disabled"
+            }`}
+            title={
+              options?.actions?.clockOut?.reason || "Record your exit time"
+            }
+          >
+            {loading && activeAction === "out" ? (
+              <Loader2
+                className="punch-spinner"
+                style={{ width: 16, height: 16 }}
+              />
+            ) : (
+              <LogOut style={{ width: 16, height: 16 }} />
             )}
+            <span>
+              {loading && activeAction === "out"
+                ? "Clocking Out..."
+                : "Clock Out"}
+            </span>
+          </button>
         </div>
-      )}
+
+        {/* Policy Guidelines */}
+        {(!isClockInAllowed || !isClockOutAllowed) && (
+          <div className="punch-guidelines">
+            <div className="punch-guidelines-header">
+              <Info style={{ width: 14, height: 14, color: "#4f46e5" }} />
+              <span>Policy Guidelines</span>
+            </div>
+            <div className="punch-guidelines-list">
+              {!isClockInAllowed && options?.actions?.clockIn?.reason && (
+                <p>• Clock In: {options.actions.clockIn.reason}</p>
+              )}
+              {!isClockOutAllowed && options?.actions?.clockOut?.reason && (
+                <p>• Clock Out: {options.actions.clockOut.reason}</p>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

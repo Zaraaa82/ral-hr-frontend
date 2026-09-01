@@ -1,645 +1,99 @@
-:root {
-  --primary-color: #0f172a;
-  --primary-hover: #1e293b;
-  --success-color: #059669;
-  --success-bg: #ecfdf5;
-  --warning-color: #d97706;
-  --warning-bg: #fffbeb;
-  --danger-color: #e11d48;
-  --danger-bg: #fff1f2;
-  --info-color: #2563eb;
-  --info-bg: #eff6ff;
-  --border-color: #e2e8f0;
-  --bg-subtle: #f8fafc;
-  --text-main: #1e293b;
-  --text-muted: #64748b;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
-  --shadow-lg:
-    0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
-}
+/* ================================================================= *
+ * PROFESSIONAL BANKING PAYSLIP STYLING                              *
+ * ================================================================= */
 
-.payslip-page {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 24px;
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
-    Cantarell, sans-serif;
-  color: var(--text-main);
-}
-
-/* --- Header Section --- */
-.payslip-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 16px;
-  background: #ffffff;
-  padding: 24px;
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-color);
-  box-shadow: var(--shadow-sm);
-  margin-bottom: 24px;
-}
-
-.payslip-header h2 {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--text-main);
-  margin: 0;
-}
-
-.payslip-header p {
-  font-size: 0.875rem;
-  color: var(--text-muted);
-  margin: 4px 0 0 0;
-}
-
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-/* --- Buttons --- */
-button {
-  font-family: inherit;
-  cursor: pointer;
-  border: none;
-  outline: none;
-  font-weight: 600;
-  font-size: 0.8125rem;
-  padding: 8px 16px;
-  border-radius: var(--radius-md);
-  transition: all 0.15s ease-in-out;
-}
-
-.generate-btn {
-  background-color: var(--primary-color);
-  color: #ffffff;
-}
-
-.generate-btn:hover:not(:disabled) {
-  background-color: var(--primary-hover);
-}
-
-.refresh-btn {
-  background-color: var(--bg-subtle);
-  color: var(--text-main);
-  border: 1px solid var(--border-color);
-}
-
-.refresh-btn:hover:not(:disabled) {
-  background-color: #e2e8f0;
-}
-
-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-/* --- Messages --- */
-.loading {
-  text-align: center;
-  font-size: 0.875rem;
-  color: var(--text-muted);
-  padding: 40px 0;
-}
-
-.error-message {
-  background-color: var(--danger-bg);
-  border: 1px solid #fecdd3;
-  color: var(--danger-color);
-  padding: 12px 16px;
-  border-radius: var(--radius-md);
-  font-size: 0.8125rem;
-  margin-bottom: 16px;
-}
-
-/* --- Table Container --- */
-.payslip-table-container {
-  background: #ffffff;
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-color);
-  box-shadow: var(--shadow-sm);
-  overflow: hidden;
-}
-
-.no-payslips {
-  text-align: center;
-  padding: 60px 24px;
-}
-
-.no-payslips h3 {
-  font-size: 1.125rem;
-  color: var(--text-main);
-  margin-bottom: 6px;
-}
-
-.no-payslips p {
-  font-size: 0.875rem;
-  color: var(--text-muted);
-  max-width: 450px;
-  margin: 0 auto;
-}
-
-.payslip-table {
-  width: 100%;
-  border-collapse: collapse;
-  text-align: left;
-  font-size: 0.875rem;
-}
-
-.payslip-table th {
-  background-color: var(--bg-subtle);
-  padding: 14px 18px;
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--text-muted);
-  border-bottom: 1px solid var(--border-color);
-}
-
-.payslip-table td {
-  padding: 16px 18px;
-  border-bottom: 1px solid var(--border-color);
-  vertical-align: middle;
-}
-
-.payslip-table tbody tr:hover {
-  background-color: #f1f5f940;
-}
-
-.year-text {
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  font-weight: normal;
-}
-
-.net-salary {
-  font-weight: 700;
-  color: var(--success-color);
-  font-family: monospace, sans-serif;
-}
-
-/* --- Status Badges --- */
-.payslip-status {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 4px 10px;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: capitalize;
-}
-
-.payslip-status.approved {
-  background-color: var(--success-bg);
-  color: var(--success-color);
-}
-
-.payslip-status.pending {
-  background-color: var(--warning-bg);
-  color: var(--warning-color);
-}
-
-/* --- Row Action Buttons --- */
-.payslip-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.view-btn {
-  background-color: var(--bg-subtle);
-  color: var(--text-main);
-  padding: 6px 12px;
-}
-
-.view-btn:hover {
-  background-color: #e2e8f0;
-}
-
-.edit-btn {
-  background-color: var(--info-bg);
-  color: var(--info-color);
-  padding: 6px 12px;
-}
-
-.edit-btn:hover {
-  background-color: #dbeafe;
-}
-
-.approve-btn {
-  background-color: var(--success-bg);
-  color: var(--success-color);
-  padding: 6px 12px;
-}
-
-.approve-btn:hover {
-  background-color: #d1fae5;
-}
-
-.delete-btn {
-  background-color: var(--danger-bg);
-  color: var(--danger-color);
-  padding: 6px 12px;
-}
-
-.delete-btn:hover {
-  background-color: #ffe4e6;
-}
-
-/* --- Modal Overlays & Windows --- */
-.payslip-modal-overlay {
-  position: fixed;
-  inset: 0;
-  background-color: rgba(15, 23, 42, 0.6);
-  backdrop-filter: blur(4px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  z-index: 1000;
-  overflow-y: auto;
-}
-
-.payslip-modal {
-  background: #ffffff;
-  width: 100%;
-  max-width: 680px;
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
-  border: 1px solid var(--border-color);
-  overflow: hidden;
-  animation: modalFadeIn 0.2s ease-out;
-}
-
-.payslip-modal.form-modal {
-  max-width: 480px;
-}
-
-@keyframes modalFadeIn {
+/* Custom Animations & Transitions */
+@keyframes fadeIn {
   from {
     opacity: 0;
-    transform: scale(0.96);
+    transform: translateY(4px);
   }
   to {
     opacity: 1;
-    transform: scale(1);
+    transform: translateY(0);
   }
 }
 
-.payslip-modal-header {
-  background-color: var(--primary-color);
-  color: #ffffff;
-  padding: 18px 24px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.animate-in {
+  animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-.payslip-modal-header h2 {
-  font-size: 1.125rem;
-  font-weight: 700;
-  margin: 0;
-}
-
-.close-btn {
-  background: transparent;
-  color: #94a3b8;
-  font-size: 1.5rem;
-  padding: 0;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-}
-
-.close-btn:hover {
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.1);
-}
-
-/* --- Payslip Statement Document Styling --- */
-.payslip-document {
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.payslip-company {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  border-bottom: 2px solid var(--border-color);
-  padding-bottom: 16px;
-}
-
-.payslip-company h1 {
-  font-size: 1.25rem;
-  font-weight: 800;
-  margin: 0;
-  color: var(--primary-color);
-}
-
-.payslip-company p {
-  margin: 2px 0 0 0;
-  font-size: 0.8125rem;
-  color: var(--text-muted);
-}
-
-.status-badge {
-  font-size: 0.75rem;
-  font-weight: 800;
-  padding: 4px 12px;
-  border-radius: 6px;
+/* Base Financial Table Enhancements */
+.payslip-table th {
   letter-spacing: 0.05em;
+  background-color: #f8fafc;
 }
 
-.status-badge.approved {
-  background-color: var(--success-bg);
-  color: var(--success-color);
-  border: 1px solid #a7f3d0;
+.payslip-table tr:hover td {
+  background-color: rgba(248, 250, 252, 0.8);
 }
 
-.status-badge.pending {
-  background-color: var(--warning-bg);
-  color: var(--warning-color);
-  border: 1px solid #fde68a;
+/* Modal Backdrop Blur Fixes */
+.backdrop-blur-sm {
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 
-.employee-information {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 12px;
-  background-color: var(--bg-subtle);
-  padding: 16px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-color);
-  font-size: 0.8125rem;
-}
-
-.employee-information span {
-  color: var(--text-muted);
-  display: block;
-  font-size: 0.75rem;
-}
-
-.employee-information strong {
-  color: var(--text-main);
-  font-size: 0.875rem;
-}
-
-/* --- Attendance Summary Inside Modal --- */
-.attendance-summary-box {
-  background: #ffffff;
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  padding: 14px;
-}
-
-.attendance-summary-box h4 {
-  margin: 0 0 10px 0;
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: var(--text-muted);
-}
-
-.attendance-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
-  gap: 8px;
-  text-align: center;
-  font-size: 0.75rem;
-}
-
-.attendance-grid > div {
-  background-color: var(--bg-subtle);
-  padding: 8px 4px;
-  border-radius: 8px;
-  border: 1px solid #edf2f7;
-}
-
-.attendance-grid span {
-  color: var(--text-muted);
-  display: block;
-}
-
-.attendance-grid strong {
-  color: var(--text-main);
-  font-size: 0.875rem;
-}
-
-/* --- Earnings & Deductions Sections --- */
-.salary-section {
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  padding: 16px;
-}
-
-.salary-section h3 {
-  font-size: 0.8125rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--text-main);
-  margin: 0 0 12px 0;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.salary-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.8125rem;
-  padding: 4px 0;
-  color: var(--text-muted);
-}
-
-.salary-row strong {
-  color: var(--text-main);
-  font-family: monospace, sans-serif;
-  font-size: 0.875rem;
-}
-
-.salary-row.total {
-  border-top: 1px solid var(--border-color);
-  margin-top: 8px;
-  padding-top: 8px;
-  font-weight: 700;
-  color: var(--text-main);
-}
-
-.salary-row.total strong {
-  font-size: 1rem;
-}
-
-/* --- Net Salary Callout Box --- */
-.net-salary-box {
-  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
-  border: 1px solid #a7f3d0;
-  border-radius: var(--radius-md);
-  padding: 16px 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.net-salary-box span {
-  font-size: 0.875rem;
-  font-weight: 700;
-  color: #065f46;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.net-salary-box strong {
-  font-size: 1.5rem;
-  font-family: monospace, sans-serif;
-  font-weight: 800;
-  color: #064e3b;
-}
-
-.unrecovered-notice {
-  background-color: var(--warning-bg);
-  color: var(--warning-color);
-  font-size: 0.75rem;
-  padding: 8px 12px;
-  border-radius: 8px;
-  border: 1px solid #fde68a;
-}
-
-/* --- Modal Actions Footer --- */
-.payslip-modal-actions {
-  background-color: var(--bg-subtle);
-  padding: 16px 24px;
-  border-top: 1px solid var(--border-color);
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-}
-
-.print-btn {
-  background-color: #334155;
-  color: #ffffff;
-}
-
-.print-btn:hover {
-  background-color: #1e293b;
-}
-
-.close-modal-btn {
-  background-color: #e2e8f0;
-  color: var(--text-main);
-}
-
-.close-modal-btn:hover {
-  background-color: #cbd5e1;
-}
-
-/* --- Modal Forms --- */
-.modal-form {
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.form-group label {
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--text-main);
-}
-
-.form-group input,
-.form-group select {
-  font-family: inherit;
-  font-size: 0.875rem;
-  padding: 10px 12px;
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  background-color: var(--bg-subtle);
-  outline: none;
-  transition: border-color 0.15s ease;
-}
-
-.form-group input:focus,
-.form-group select:focus {
-  border-color: var(--primary-color);
-  background-color: #ffffff;
-}
-
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-.payslip-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 1.5rem;
-}
-
-.payslip-card {
-  background-color: #ffffff;
-  border-radius: 1rem;
-  border: 1px solid rgba(226, 232, 240, 0.8);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-}
-/* --- Print Rules --- */
+/* ================================================================= *
+ * PRINT STYLING (For Official Bank / PDF Export)                    *
+ * ================================================================= */
 @media print {
+  /* Hide unnecessary dashboard elements when printing */
   body * {
     visibility: hidden;
   }
-  .payslip-modal-overlay,
-  .payslip-modal,
-  .payslip-document,
-  .payslip-document * {
+
+  /* Show only the payslip modal or container */
+  .fixed.inset-0.z-50,
+  .fixed.inset-0.z-50 * {
     visibility: visible;
   }
-  .payslip-modal-overlay {
+
+  .fixed.inset-0.z-50 {
     position: absolute;
     left: 0;
     top: 0;
-    padding: 0;
-    background: #ffffff;
+    width: 100%;
+    height: auto;
+    background: white !important;
+    backdrop-filter: none !important;
+    padding: 0 !important;
   }
-  .payslip-modal-header,
-  .payslip-modal-actions {
+
+  /* Hide close/print action buttons inside the modal print view */
+  button,
+  .no-print {
     display: none !important;
   }
-  .payslip-modal {
-    border: none;
-    box-shadow: none;
-    max-width: 100%;
+
+  /* Optimize modal container for standard A4 / Letter paper */
+  .fixed.inset-0.z-50 > div {
+    box-shadow: none !important;
+    border: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 20px !important;
   }
 }
 
-/* --- Responsive Adjustments --- */
-@media (max-width: 768px) {
-  .payslip-table {
-    display: block;
-    overflow-x: auto;
-    white-space: nowrap;
-  }
-  .form-row {
-    grid-template-columns: 1fr;
-  }
+/* ================================================================= *
+ * UTILITY & CUSTOM SCROLLBARS FOR MODALS                            *
+ * ================================================================= */
+.max-h-\[70vh\]::-webkit-scrollbar {
+  width: 6px;
+}
+
+.max-h-\[70vh\]::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 8px;
+}
+
+.max-h-\[70vh\]::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 8px;
+}
+
+.max-h-\[70vh\]::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }

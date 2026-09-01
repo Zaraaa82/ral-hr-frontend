@@ -2,7 +2,10 @@ import { useEffect, useMemo, useState } from "react";
 import { io } from "socket.io-client";
 import "../../styles/attendance/attendance-calendar.css";
 
-const socket = io("http://localhost:3000");
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+
+const socket = io(API_BASE_URL);
 
 const DAYS_OF_WEEK = [
   "Sunday",
@@ -39,10 +42,19 @@ function AdminAttendanceCalendar() {
   const [selectedEmployee, setSelectedEmployee] = useState("");
 
   const [loading, setLoading] = useState(false);
+  const [employeesLoading, setEmployeesLoading] = useState(true);
   const [error, setError] = useState("");
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth() + 1;
+
+  // =====================================================
+  // HELPERS
+  // =====================================================
+
+  const getToken = () => {
+    return localStorage.getItem("token");
+  };
 
   const getEmployeeId = (employee) => {
     if (!employee) return null;
@@ -81,7 +93,13 @@ function AdminAttendanceCalendar() {
   };
 
   const getDateKey = (date) => {
+    if (!date) return null;
+
     const d = new Date(date);
+
+    if (Number.isNaN(d.getTime())) {
+      return null;
+    }
 
     const y = d.getFullYear();
     const m = String(d.getMonth() + 1).padStart(2, "0");
@@ -99,20 +117,35 @@ function AdminAttendanceCalendar() {
   const formatTime = (time) => {
     if (!time) return "--";
 
-    return new Date(time).toLocaleTimeString([], {
+    const date = new Date(time);
+
+    if (Number.isNaN(date.getTime())) {
+      return "--";
+    }
+
+    return date.toLocaleTimeString([], {
       hour: "2-digit",
       minute: "2-digit",
     });
   };
 
+  // =====================================================
   // FETCH EMPLOYEES
+  // =====================================================
 
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
-        const response = await fetch("http://localhost:5000/employees", {
+        setEmployeesLoading(true);
+        setError("");
+
+        const token = localStorage.getItem("token");
+
+        const response = await fetch(`${API_BASE_URL}/user/allUsers`, {
+          method: "GET",
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
         });
 
@@ -122,14 +155,25 @@ function AdminAttendanceCalendar() {
           throw new Error(data.message || "Failed to fetch employee list.");
         }
 
-        setEmployees(Array.isArray(data) ? data : []);
+        console.log("Employees received:", data.allUsers);
+
+        setEmployees(data.allUsers || []);
       } catch (err) {
         console.error("Failed to fetch employee list:", err);
+
+        setEmployees([]);
+
+        setError(err.message || "Failed to fetch employee list.");
+      } finally {
+        setEmployeesLoading(false);
       }
     };
 
     fetchEmployees();
   }, []);
+  // =====================================================
+  // DEPARTMENTS
+  // =====================================================
 
   const departments = useMemo(() => {
     const departmentMap = new Map();
@@ -145,16 +189,22 @@ function AdminAttendanceCalendar() {
 
       const departmentName = getDepartmentName(department);
 
-      if (!departmentMap.has(departmentId)) {
-        departmentMap.set(departmentId, {
+      if (!departmentMap.has(departmentId.toString())) {
+        departmentMap.set(departmentId.toString(), {
           id: departmentId,
           name: departmentName,
         });
       }
     });
 
-    return Array.from(departmentMap.values());
+    return Array.from(departmentMap.values()).sort((a, b) =>
+      a.name.localeCompare(b.name),
+    );
   }, [employees]);
+
+  // =====================================================
+  // FILTER EMPLOYEES
+  // =====================================================
 
   const filteredEmployees = useMemo(() => {
     if (!selectedDepartment) {
@@ -171,9 +221,12 @@ function AdminAttendanceCalendar() {
 
   const handleDepartmentChange = (event) => {
     setSelectedDepartment(event.target.value);
-
     setSelectedEmployee("");
   };
+
+  // =====================================================
+  // FETCH MONTHLY ATTENDANCE
+  // =====================================================
 
   const fetchMonthlyLogs = async () => {
     try {
@@ -193,11 +246,15 @@ function AdminAttendanceCalendar() {
         params.append("employeeId", selectedEmployee);
       }
 
+      const token = getToken();
+
       const response = await fetch(
-        `http://localhost:5000/attendance/admin/calendar?${params.toString()}`,
+        `${API_BASE_URL}/attendance/admin/calendar?${params.toString()}`,
         {
+          method: "GET",
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
         },
       );
@@ -208,20 +265,48 @@ function AdminAttendanceCalendar() {
         throw new Error(data.message || "Failed to fetch attendance logs.");
       }
 
-      setLogs(Array.isArray(data) ? data : []);
+      /*
+       * Handle both:
+       *
+       * [...]
+       *
+       * and:
+       *
+       * { logs: [...] }
+       */
+
+      if (Array.isArray(data)) {
+        setLogs(data);
+      } else if (Array.isArray(data.logs)) {
+        setLogs(data.logs);
+      } else if (Array.isArray(data.data)) {
+        setLogs(data.data);
+      } else {
+        console.warn("Unexpected attendance response:", data);
+        setLogs([]);
+      }
     } catch (err) {
       console.error("fetchMonthlyLogs:", err);
+
+      setLogs([]);
+
       setError(err.message || "Failed to fetch attendance logs.");
     } finally {
       setLoading(false);
     }
   };
 
-  // FETCH WHEN FILTER / MONTH CHANGES
+  // =====================================================
+  // FETCH WHEN MONTH / FILTER CHANGES
+  // =====================================================
 
   useEffect(() => {
     fetchMonthlyLogs();
   }, [year, month, selectedDepartment, selectedEmployee]);
+
+  // =====================================================
+  // SOCKET.IO
+  // =====================================================
 
   useEffect(() => {
     const handleClockedIn = ({ attendance: newRecord }) => {
@@ -269,13 +354,19 @@ function AdminAttendanceCalendar() {
     };
 
     socket.on("attendance:clockedIn", handleClockedIn);
+
     socket.on("attendance:clockedOut", handleClockedOut);
 
     return () => {
       socket.off("attendance:clockedIn", handleClockedIn);
+
       socket.off("attendance:clockedOut", handleClockedOut);
     };
   }, [selectedDepartment, selectedEmployee]);
+
+  // =====================================================
+  // MONTH NAVIGATION
+  // =====================================================
 
   const handlePrevMonth = () => {
     setCurrentDate(new Date(year, month - 2, 1));
@@ -285,9 +376,17 @@ function AdminAttendanceCalendar() {
     setCurrentDate(new Date(year, month, 1));
   };
 
+  // =====================================================
+  // CALENDAR INFORMATION
+  // =====================================================
+
   const daysInMonth = new Date(year, month, 0).getDate();
 
   const firstDayIndex = new Date(year, month - 1, 1).getDay();
+
+  // =====================================================
+  // INDEX LOGS
+  // =====================================================
 
   const logsByEmployeeAndDate = useMemo(() => {
     const map = new Map();
@@ -295,9 +394,15 @@ function AdminAttendanceCalendar() {
     logs.forEach((log) => {
       const employeeId = getEmployeeId(log.employee);
 
-      if (!employeeId || !log.date) return;
+      if (!employeeId || !log.date) {
+        return;
+      }
 
       const dateKey = getDateKey(log.date);
+
+      if (!dateKey) {
+        return;
+      }
 
       const key = `${employeeId}_${dateKey}`;
 
@@ -307,12 +412,16 @@ function AdminAttendanceCalendar() {
     return map;
   }, [logs]);
 
-  // GET ATTENDANCE RECORD FOR A DAY
+  // =====================================================
+  // GET ATTENDANCE FOR DAY
+  // =====================================================
 
   const getAttendanceForEmployeeDate = (employee, day) => {
     const employeeId = getEmployeeId(employee);
 
-    if (!employeeId) return null;
+    if (!employeeId) {
+      return null;
+    }
 
     const dateKey = getCalendarDateKey(year, month, day);
 
@@ -321,33 +430,42 @@ function AdminAttendanceCalendar() {
     return logsByEmployeeAndDate.get(key) || null;
   };
 
-  // DETERMINE STATUS FOR CALENDAR
+  // =====================================================
+  // DETERMINE STATUS
+  // =====================================================
 
   const getStatusForEmployeeDate = (employee, day) => {
     const attendance = getAttendanceForEmployeeDate(employee, day);
 
-    // If attendance record exists, trust its status.
+    // If attendance exists, use its status
     if (attendance?.status) {
       return attendance.status;
     }
 
-    // Determine day of week.
     const date = new Date(year, month - 1, day);
 
     const dayName = DAYS_OF_WEEK[date.getDay()];
 
-    const workingDays = employee?.workSchedule?.workingDays || [];
+    // Standard Bahrain working days
+    const workingDays = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+    ];
 
-    // No attendance record on a scheduled working day = Absent.
+    // No attendance on working day = Absent
     if (workingDays.includes(dayName)) {
       return "Absent";
     }
 
-    // No attendance record on a non-working day = Weekly Off.
+    // Friday/Saturday = Weekly Off
     return "Weekly Off";
   };
-
-  // GET STATUS
+  // =====================================================
+  // STATUS CLASS
+  // =====================================================
 
   const getStatusClass = (status) => {
     switch (status) {
@@ -374,17 +492,26 @@ function AdminAttendanceCalendar() {
     }
   };
 
-  // FILTER EMPLOYEES USED BY CALENDAR
+  // =====================================================
+  // EMPLOYEES SHOWN ON CALENDAR
+  // =====================================================
 
   const calendarEmployees = selectedEmployee
     ? filteredEmployees.filter(
-      (employee) => employee._id?.toString() === selectedEmployee.toString(),
-    )
+        (employee) => employee._id?.toString() === selectedEmployee.toString(),
+      )
     : filteredEmployees;
+
+  // =====================================================
+  // RENDER
+  // =====================================================
 
   return (
     <div className="admin-calendar-container">
+      {/* ================================================= */}
       {/* HEADER */}
+      {/* ================================================= */}
+
       <div className="calendar-header">
         <h2>
           {MONTH_NAMES[month - 1]} {year}
@@ -392,6 +519,7 @@ function AdminAttendanceCalendar() {
 
         <div className="calendar-actions">
           {/* DEPARTMENT */}
+
           <div className="filter-select-group">
             <label htmlFor="deptSelect">Department:</label>
 
@@ -399,6 +527,7 @@ function AdminAttendanceCalendar() {
               id="deptSelect"
               value={selectedDepartment}
               onChange={handleDepartmentChange}
+              disabled={employeesLoading}
             >
               <option value="">All Departments</option>
 
@@ -411,6 +540,7 @@ function AdminAttendanceCalendar() {
           </div>
 
           {/* EMPLOYEE */}
+
           <div className="filter-select-group">
             <label htmlFor="employeeSelect">Employee:</label>
 
@@ -418,6 +548,7 @@ function AdminAttendanceCalendar() {
               id="employeeSelect"
               value={selectedEmployee}
               onChange={(event) => setSelectedEmployee(event.target.value)}
+              disabled={employeesLoading}
             >
               <option value="">All Employees</option>
 
@@ -430,24 +561,47 @@ function AdminAttendanceCalendar() {
           </div>
 
           {/* MONTH NAVIGATION */}
-          <div className="calendar-nav">
-            <button onClick={handlePrevMonth}>&larr; Prev</button>
 
-            <button onClick={handleNextMonth}>Next &rarr;</button>
+          <div className="calendar-nav">
+            <button type="button" onClick={handlePrevMonth}>
+              &larr; Prev
+            </button>
+
+            <button type="button" onClick={handleNextMonth}>
+              Next &rarr;
+            </button>
           </div>
         </div>
       </div>
 
-      {/* LOADING */}
-      {loading && <p className="loading">Loading calendar...</p>}
+      {/* ================================================= */}
+      {/* EMPLOYEE LOADING */}
+      {/* ================================================= */}
 
+      {employeesLoading && <p className="loading">Loading employees...</p>}
+
+      {/* ================================================= */}
+      {/* ATTENDANCE LOADING */}
+      {/* ================================================= */}
+
+      {!employeesLoading && loading && (
+        <p className="loading">Loading calendar...</p>
+      )}
+
+      {/* ================================================= */}
       {/* ERROR */}
+      {/* ================================================= */}
+
       {error && <p className="error-message">{error}</p>}
 
+      {/* ================================================= */}
       {/* CALENDAR */}
-      {!loading && !error && (
+      {/* ================================================= */}
+
+      {!employeesLoading && !loading && !error && (
         <>
           {/* LEGEND */}
+
           <div className="attendance-legend">
             <span className="legend-item">
               <span className="legend-dot present"></span>
@@ -480,15 +634,19 @@ function AdminAttendanceCalendar() {
             </span>
           </div>
 
+          {/* CALENDAR GRID */}
+
           <div className="calendar-grid">
             {/* DAY HEADERS */}
+
             {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
               <div key={day} className="day-header">
                 {day}
               </div>
             ))}
 
-            {/* EMPTY CELLS BEFORE FIRST DAY */}
+            {/* EMPTY CELLS */}
+
             {Array.from({
               length: firstDayIndex,
             }).map((_, index) => (
@@ -496,6 +654,7 @@ function AdminAttendanceCalendar() {
             ))}
 
             {/* DAYS */}
+
             {Array.from({
               length: daysInMonth,
             }).map((_, index) => {
@@ -505,24 +664,18 @@ function AdminAttendanceCalendar() {
 
               const dayName = DAYS_OF_WEEK[date.getDay()];
 
-              /*
-               * Employees shown for this calendar.
-               *
-               * If no employee is selected:
-               * show every employee.
-               *
-               * If an employee is selected:
-               * only show that employee.
-               */
               const employeesForDay = calendarEmployees;
 
               return (
                 <div
                   key={day}
                   className="calendar-day"
-                  title={`${dayName}, ${MONTH_NAMES[month - 1]} ${day}, ${year}`}
+                  title={`${dayName}, ${
+                    MONTH_NAMES[month - 1]
+                  } ${day}, ${year}`}
                 >
                   {/* DAY NUMBER */}
+
                   <span className="day-number">{day}</span>
 
                   <div className="day-logs">
@@ -542,20 +695,19 @@ function AdminAttendanceCalendar() {
                         <div
                           key={`${employee._id}-${day}`}
                           className={`calendar-badge ${statusClass}`}
-                          title={`${employeeName} - ${status}${attendance
+                          title={`${employeeName} - ${status}${
+                            attendance
                               ? ` | In: ${formatTime(
-                                attendance.inTime,
-                              )} | Out: ${formatTime(attendance.outTime)}`
+                                  attendance.inTime,
+                                )} | Out: ${formatTime(attendance.outTime)}`
                               : ""
-                            }`}
+                          }`}
                         >
                           <span className="emp-name">{employeeName}</span>
 
                           <div className="badge-info">
-                            {/* STATUS */}
                             <span className="badge-status">{status}</span>
 
-                            {/* LATE */}
                             {attendance?.flags?.includes("late") && (
                               <span className="badge-late">L</span>
                             )}
@@ -564,7 +716,6 @@ function AdminAttendanceCalendar() {
                       );
                     })}
 
-                    {/* NO EMPLOYEES */}
                     {calendarEmployees.length === 0 && (
                       <span className="no-employees">No employees</span>
                     )}

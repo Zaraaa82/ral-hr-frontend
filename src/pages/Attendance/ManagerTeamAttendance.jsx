@@ -1,8 +1,22 @@
 import React, { useState, useEffect } from "react";
-import "../../styles/attendance/attendance.css";
+import { Users, Edit3, X, Send, Lock } from "lucide-react";
+import api from "../../services/api";
+import "../../styles/attendance/ManagerTeamAttendance.css";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+const MONTH_NAMES = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
 
 export default function ManagerTeamAttendance() {
   const [logs, setLogs] = useState([]);
@@ -25,21 +39,17 @@ export default function ManagerTeamAttendance() {
       setLoading(true);
       setError("");
 
-      const res = await fetch(
-        `${API_BASE_URL}/attendance/team/calendar?year=${selectedYear}&month=${selectedMonth}`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        },
+      const res = await api.get(
+        `/attendance/team/calendar?year=${selectedYear}&month=${selectedMonth}`,
       );
 
-      const data = await res.json();
-      if (!res.ok)
-        throw new Error(data.message || "Failed to fetch team attendance.");
-      setLogs(Array.isArray(data) ? data : []);
+      setLogs(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
-      setError(err.message);
+      setError(
+        err.response?.data?.message ||
+          err.message ||
+          "Failed to fetch team attendance.",
+      );
     } finally {
       setLoading(false);
     }
@@ -55,7 +65,7 @@ export default function ManagerTeamAttendance() {
       log.inTime ? new Date(log.inTime).toISOString().slice(11, 16) : "08:00",
     );
     setReqOutTime(
-      log.outTime ? new Date(log.outTime).toISOString().slice(11, 16) : "16:00",
+      log.outTime ? new Date(log.outTime).toISOString().slice(11, 16) : "17:00",
     );
     setReqStatus(log.status || "Present");
     setReason("");
@@ -73,111 +83,124 @@ export default function ManagerTeamAttendance() {
       setSubmitting(true);
       setModalMsg("");
 
-      // Combine log date with hours
       const baseDate = new Date(selectedLog.date).toISOString().slice(0, 10);
       const isoIn = reqInTime ? `${baseDate}T${reqInTime}:00.000Z` : null;
       const isoOut = reqOutTime ? `${baseDate}T${reqOutTime}:00.000Z` : null;
 
-      const res = await fetch(
-        `${API_BASE_URL}/attendance/${selectedLog._id}/correction-requests`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-          body: JSON.stringify({
-            requestedInTime: isoIn,
-            requestedOutTime: isoOut,
-            requestedStatus: reqStatus,
-            reason,
-          }),
-        },
-      );
+      await api.post(`/attendance/${selectedLog._id}/correction-requests`, {
+        requestedInTime: isoIn,
+        requestedOutTime: isoOut,
+        requestedStatus: reqStatus,
+        reason,
+      });
 
-      const data = await res.json();
-      if (!res.ok)
-        throw new Error(data.message || "Failed to submit correction request.");
-
-      alert("Correction request submitted for HR review!");
       setSelectedLog(null);
       fetchTeamLogs();
     } catch (err) {
-      setModalMsg(err.message);
+      setModalMsg(
+        err.response?.data?.message ||
+          err.message ||
+          "Failed to submit correction request.",
+      );
     } finally {
       setSubmitting(false);
     }
   };
 
+  const formatTime = (timeIso) => {
+    if (!timeIso) return "--:--";
+    return new Date(timeIso).toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
+  const getStatusBadgeClass = (status) => {
+    switch (status) {
+      case "Present":
+        return "badge-present";
+      case "Absent":
+        return "badge-absent";
+      case "On Leave":
+        return "badge-leave";
+      default:
+        return "badge-default";
+    }
+  };
+
   return (
     <div className="attendance-card">
-      <div className="card-header-bar">
+      {/* Header & Controls */}
+      <div className="attendance-header">
         <div>
-          <h3>Team Attendance & Correction Requests</h3>
-          <p className="subtext">
-            Review direct reports and request time adjustments
+          <h3 className="attendance-title">
+            <Users className="title-icon" />
+            <span>Team Attendance & Correction Requests</span>
+          </h3>
+          <p className="attendance-subtitle">
+            Review direct reports and request time adjustments for HR approval
           </p>
         </div>
 
-        <div className="filter-row">
+        {/* Month & Year Selectors */}
+        <div className="controls-group">
           <select
             value={selectedMonth}
-            onChange={(e) => setSelectedMonth(e.target.value)}
+            onChange={(e) => setSelectedMonth(Number(e.target.value))}
+            className="select-input"
           >
-            {[
-              "Jan",
-              "Feb",
-              "Mar",
-              "Apr",
-              "May",
-              "Jun",
-              "Jul",
-              "Aug",
-              "Sep",
-              "Oct",
-              "Nov",
-              "Dec",
-            ].map((m, i) => (
+            {MONTH_NAMES.map((m, i) => (
               <option key={m} value={i + 1}>
                 {m}
               </option>
             ))}
           </select>
+
           <input
             type="number"
             value={selectedYear}
-            onChange={(e) => setSelectedYear(e.target.value)}
-            className="input-number"
+            onChange={(e) => setSelectedYear(Number(e.target.value))}
+            className="year-input"
           />
         </div>
       </div>
 
-      {error && <div className="alert-box error">{error}</div>}
+      {error && <div className="error-alert">{error}</div>}
 
-      <div className="table-responsive">
+      {/* Table */}
+      <div className="table-container">
         <table className="attendance-table">
           <thead>
             <tr>
               <th>Employee</th>
               <th>Date</th>
-              <th>In / Out</th>
+              <th>In / Out Time</th>
               <th>Status</th>
               <th>Exceptions</th>
               <th>Correction Status</th>
-              <th>Action</th>
+              <th style={{ textAlign: "right" }}>Actions</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan="7" className="text-center py-4">
-                  Loading team logs...
+                <td
+                  colSpan="7"
+                  style={{ textAlign: "center", padding: "2rem" }}
+                >
+                  <div className="spinner" />
+                  <span className="text-muted">Loading team logs...</span>
                 </td>
               </tr>
             ) : logs.length === 0 ? (
               <tr>
-                <td colSpan="7" className="text-center py-4 text-muted">
-                  No attendance logs found for this period.
+                <td
+                  colSpan="7"
+                  style={{ textAlign: "center", padding: "2rem" }}
+                >
+                  <span className="text-muted">
+                    No attendance logs found for this period.
+                  </span>
                 </td>
               </tr>
             ) : (
@@ -185,70 +208,90 @@ export default function ManagerTeamAttendance() {
                 const hasPending = log.correctionRequests?.some(
                   (r) => r.status === "pending",
                 );
+
                 return (
                   <tr key={log._id}>
                     <td>
-                      <strong>{log.employee?.fullName || "Employee"}</strong>
-                      <span className="code-subtext">
+                      <strong className="employee-name">
+                        {log.employee?.fullName || "Employee"}
+                      </strong>
+                      <span className="employee-code">
                         {log.employee?.employeeCode}
                       </span>
                     </td>
-                    <td>
+                    <td style={{ fontWeight: 600, color: "#1e293b" }}>
                       {new Date(log.date).toLocaleDateString([], {
                         month: "short",
                         day: "numeric",
                       })}
                     </td>
-                    <td>
-                      {log.inTime
-                        ? new Date(log.inTime).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })
-                        : "--:--"}
-                      {" - "}
-                      {log.outTime
-                        ? new Date(log.outTime).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })
-                        : "--:--"}
+                    <td className="font-mono">
+                      {formatTime(log.inTime)} — {formatTime(log.outTime)}
                     </td>
                     <td>
                       <span
-                        className={`status-badge ${(log.status || "").toLowerCase().replace(" ", "-")}`}
+                        className={`badge ${getStatusBadgeClass(log.status)}`}
                       >
                         {log.status}
                       </span>
                     </td>
                     <td>
-                      <div className="flags-wrap">
+                      <div className="flag-group">
                         {log.flags?.map((flag) => (
-                          <span key={flag} className={`flag-chip ${flag}`}>
+                          <span
+                            key={flag}
+                            className={`flag-badge ${
+                              flag === "late"
+                                ? "flag-late"
+                                : flag === "missingTimeOut"
+                                  ? "flag-missing"
+                                  : "flag-default"
+                            }`}
+                          >
                             {flag}
                           </span>
                         ))}
+                        {(!log.flags || log.flags.length === 0) && (
+                          <span className="text-muted">None</span>
+                        )}
                       </div>
                     </td>
                     <td>
                       {hasPending ? (
-                        <span className="badge-warning">HR Review Pending</span>
+                        <span className="badge status-pending">
+                          HR Review Pending
+                        </span>
                       ) : log.correctionRequests?.length > 0 ? (
-                        <span className="badge-applied">
+                        <span className="badge status-history">
                           History ({log.correctionRequests.length})
                         </span>
                       ) : (
                         <span className="text-muted">None</span>
                       )}
                     </td>
-                    <td>
-                      <button
-                        className="btn btn-sm btn-outline"
-                        disabled={log.locked || hasPending}
-                        onClick={() => openCorrectionModal(log)}
-                      >
-                        {hasPending ? "Pending" : "Request Correction"}
-                      </button>
+                    <td style={{ textAlign: "right" }}>
+                      {log.locked ? (
+                        <span className="action-locked">
+                          <Lock
+                            style={{ width: "0.875rem", height: "0.875rem" }}
+                          />
+                          <span>Locked</span>
+                        </span>
+                      ) : (
+                        <button
+                          type="button"
+                          disabled={hasPending}
+                          onClick={() => openCorrectionModal(log)}
+                          className="btn-action"
+                        >
+                          <Edit3
+                            style={{ width: "0.875rem", height: "0.875rem" }}
+                          />
+                          <span>
+                            {hasPending ? "Pending" : "Request Correction"}
+                          </span>
+                        </button>
+                      )}
                     </td>
                   </tr>
                 );
@@ -260,52 +303,58 @@ export default function ManagerTeamAttendance() {
 
       {/* Modal for Requesting Correction */}
       {selectedLog && (
-        <div className="modal-backdrop">
+        <div className="modal-overlay">
           <div className="modal-content">
             <div className="modal-header">
-              <h4>Request Attendance Correction</h4>
+              <h4 className="modal-title">Request Attendance Correction</h4>
               <button
+                type="button"
                 className="btn-close"
                 onClick={() => setSelectedLog(null)}
               >
-                ×
+                <X style={{ width: "1.25rem", height: "1.25rem" }} />
               </button>
             </div>
 
             <form onSubmit={handleCorrectionSubmit} className="modal-form">
-              {modalMsg && <div className="alert-box error">{modalMsg}</div>}
+              {modalMsg && <div className="error-alert">{modalMsg}</div>}
 
-              <div className="form-info-banner">
-                <strong>{selectedLog.employee?.fullName}</strong> —{" "}
-                {new Date(selectedLog.date).toDateString()}
+              <div className="employee-summary">
+                <div className="name">{selectedLog.employee?.fullName}</div>
+                <div className="shift-date">
+                  Shift Date: {new Date(selectedLog.date).toDateString()}
+                </div>
               </div>
 
-              <div className="form-grid-2">
-                <div className="form-group">
-                  <label>Corrected Clock-In Time</label>
+              <div className="grid-2col">
+                <div>
+                  <label className="form-label">Corrected Clock-In Time</label>
                   <input
                     type="time"
                     value={reqInTime}
                     onChange={(e) => setReqInTime(e.target.value)}
+                    className="form-input font-mono"
                     required
                   />
                 </div>
-                <div className="form-group">
-                  <label>Corrected Clock-Out Time</label>
+                <div>
+                  <label className="form-label">Corrected Clock-Out Time</label>
                   <input
                     type="time"
                     value={reqOutTime}
                     onChange={(e) => setReqOutTime(e.target.value)}
+                    className="form-input font-mono"
                     required
                   />
                 </div>
               </div>
 
-              <div className="form-group">
-                <label>Attendance Status</label>
+              <div>
+                <label className="form-label">Attendance Status</label>
                 <select
                   value={reqStatus}
                   onChange={(e) => setReqStatus(e.target.value)}
+                  className="form-select"
                 >
                   <option value="Present">Present</option>
                   <option value="Half Day">Half Day</option>
@@ -314,32 +363,36 @@ export default function ManagerTeamAttendance() {
                 </select>
               </div>
 
-              <div className="form-group">
-                <label>Justification Reason (Max 500 chars)</label>
+              <div>
+                <label className="form-label">
+                  Justification Reason (Max 500 chars)
+                </label>
                 <textarea
                   rows="3"
                   maxLength="500"
                   placeholder="Explain why this correction is required (e.g. badge scanner malfunction)..."
                   value={reason}
                   onChange={(e) => setReason(e.target.value)}
+                  className="form-textarea"
                   required
-                ></textarea>
+                />
               </div>
 
               <div className="modal-actions">
                 <button
                   type="button"
-                  className="btn btn-secondary"
+                  className="btn-cancel"
                   onClick={() => setSelectedLog(null)}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="btn btn-primary"
+                  className="btn-submit"
                   disabled={submitting}
                 >
-                  {submitting ? "Submitting..." : "Submit to HR"}
+                  <Send style={{ width: "0.875rem", height: "0.875rem" }} />
+                  <span>{submitting ? "Submitting..." : "Submit to HR"}</span>
                 </button>
               </div>
             </form>
