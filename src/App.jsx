@@ -3,13 +3,6 @@ import { Routes, Route, Link } from 'react-router'
 // Components
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
-import { useAuth } from "./context/AuthContext";
-import IsAdmin from "./components/IsAdmin";
-
-
-// Services
-import { getCurrentUser, logout } from "./services/authService";
-
 
 // User
 import Homepage from "./pages/Homepage";
@@ -20,15 +13,15 @@ import AllUsers from './pages/Users/AllUsers'
 import UserDetails from './pages/Users/UserDetails'
 
 // Attendance Pages
-import AttendanceDashboard from "./pages/Attendance/AttendanceDashboard";
+import EmployeePersonalDashboard from "./pages/Dashboards/EmployeePersonalDashboard";
 import AttendancePunch from "./pages/Attendance/AttendancePunch";
 import EmployeeAttendanceHistory from "./pages/Attendance/EmployeeAttendanceHistory";
 import ManagerTeamAttendance from "./pages/Attendance/ManagerTeamAttendance";
+import AdminAttendanceCalendar from "./pages/Attendance/AdminAttendanceCalendar";
 import HRPendingCorrections from "./pages/AuditLogs/HRPendingCorrections";
 import AdminAttendanceCalendar from "./pages/Attendance/AdminAttendanceCalendar";
 
-
-// Payroll Pages
+// Payroll
 import Payslips from "./pages/Payslip/Payslips";
 
 
@@ -38,65 +31,53 @@ import AllDepartments from './pages/Department/AllDepartments';
 
 function App() {
   return (
-    <div className="min-h-screen bg-card text-mid">
-
-      <Navbar />
-
-      {/* Main content */}
-      <main className="ml-64 min-h-screen">
+    <div className="min-h-screen bg-slate-50 text-slate-900">
+      <main>
+        <Navbar />
 
         <Routes>
+          {/* PUBLIC ROUTES */}
 
-          {/* HOME */}
-          <Route
-            path="/"
-            element={<Homepage />}
-          />
+          <Route path="/" element={<Homepage />} />
 
-          {/* AUTH */}
-          <Route
-            path="/sign-in"
-            element={<SignInPage />}
-          />
+          <Route path="/sign-in" element={<SignInPage />} />
 
-          {/* USERS */}
+
+          {/* HR Admin Dashboard */}
           <Route
             path="/dashboard"
             element={
-              <ProtectedRoute>
-                <IsAdmin>
-                  <Dashboard />
-                </IsAdmin>
+              <ProtectedRoute requiredRole="HR Admin">
+                <Dashboard />
               </ProtectedRoute>
             }
           />
 
+          {/* HR Admin Calendar */}
           <Route
-            path="/admin/dashboard"
+            path="/admin/calendar"
             element={
-              <IsAdmin>
-                <ProtectedRoute requiredRole="admin">
-                  <AdminAttendanceCalendar />
-                </ProtectedRoute>
-              </IsAdmin>
+              <ProtectedRoute requiredRole="HR Admin">
+                <AdminAttendanceCalendar />
+              </ProtectedRoute>
             }
           />
 
+
+          {/* Create User */}
           <Route
             path="/user/create"
             element={
-              <IsAdmin>
-                <ProtectedRoute requiredRole="admin">
-                  <AddUser />
-                </ProtectedRoute>
-              </IsAdmin>
+              <ProtectedRoute requiredRole="HR Admin">
+                <AddUser />
+              </ProtectedRoute>
             }
           />
           <Route
             path="/user/all"
             element={
               <IsAdmin>
-                <ProtectedRoute requiredRole="admin">
+                <ProtectedRoute requiredRole="HR Admin">
                   <AllUsers />
                 </ProtectedRoute>
               </IsAdmin>
@@ -105,22 +86,52 @@ function App() {
           <Route
             path="/user/:userId"
             element={
-              <ProtectedRoute requiredRole="admin">
+              <ProtectedRoute requiredRole="HR Admin">
                 <UserDetails />
               </ProtectedRoute>
             }
           />
           {/* ATTENDANCE */}
 
+
+          {/* HR Attendance Corrections */}
           <Route
-            path="/attendance"
+            path="/admin/attendance/corrections"
             element={
-              <ProtectedRoute>
-                <AttendanceDashboard />
+              <ProtectedRoute requiredRole="HR Admin">
+                <HRPendingCorrections />
               </ProtectedRoute>
             }
           />
 
+          {/* ===================================================== */}
+          {/* PAYROLL - HR ADMIN */}
+          {/* ===================================================== */}
+
+          <Route
+            path="/admin/payslips"
+            element={
+              <ProtectedRoute requiredRole="HR Admin">
+                <Payslips />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* ===================================================== */}
+          {/* EMPLOYEE */}
+          {/* ===================================================== */}
+
+          {/* Employee Dashboard */}
+          <Route
+            path="/attendance"
+            element={
+              <ProtectedRoute>
+                <EmployeePersonalDashboard />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Punch In / Out */}
           <Route
             path="/attendance/punch"
             element={
@@ -130,6 +141,7 @@ function App() {
             }
           />
 
+          {/* Attendance History */}
           <Route
             path="/attendance/history"
             element={
@@ -138,6 +150,10 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          {/* ===================================================== */}
+          {/* MANAGER */}
+          {/* ===================================================== */}
 
           <Route
             path="/manager/team-attendance"
@@ -148,39 +164,29 @@ function App() {
             }
           />
 
-          <Route
-            path="/admin/attendance"
-            element={
-              <ProtectedRoute requiredRole="HR Admin">
-                <AdminAttendanceCalendar />
-              </ProtectedRoute>
-            }
-          />
+          {/* ===================================================== */}
+          {/* EMPLOYEE PAYSLIPS */}
+          {/* ===================================================== */}
+
+          {/* IMPORTANT:
+              This replaces /:id/payslips
+          */}
 
           <Route
-            path="/admin/attendance/corrections"
-            element={
-              <ProtectedRoute requiredRole="HR Admin">
-                <HRPendingCorrections />
-              </ProtectedRoute>
-            }
-          />
-
-          {/* PAYSLIPS */}
-
-          <Route
-            path="/:id/payslips"
+            path="/payslips"
             element={
               <ProtectedRoute>
                 <Payslips />
               </ProtectedRoute>
             }
           />
+          {/* PAYSLIPS */}
+
 
           <Route
-            path="/admin/payslips"
+            path="/:id/payslips"
             element={
-              <ProtectedRoute requiredRole="HR Admin">
+              <ProtectedRoute>
                 <Payslips />
               </ProtectedRoute>
             }
@@ -240,7 +246,7 @@ function App() {
             }
           />
 
-        </Routes>
+              </Routes>
 
       </main>
     </div>

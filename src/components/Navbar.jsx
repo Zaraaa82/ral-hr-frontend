@@ -1,139 +1,274 @@
+import React from "react";
+import { Link, useLocation, useNavigate } from "react-router";
+import { useTranslation } from "react-i18next";
+import { useAuth } from "../context/AuthContext";
+import LanguageSwitcher from "./LanguageSwitcher";
 
-import { Link, useLocation } from 'react-router'
-import { useAuth } from '../context/AuthContext'
-import { useTranslation } from 'react-i18next'
-import LanguageSwitcher from './LanguageSwitcher'
+import {
+    LayoutDashboard,
+    Users,
+    Building2,
+    Fingerprint,
+    History,
+    Calendar,
+    CreditCard,
+    LogOut,
+    LogIn,
+} from "lucide-react";
 
 function Navbar() {
-  const { t } = useTranslation()
-  const { logout, user } = useAuth()
-  const location = useLocation()
+    const { t } = useTranslation();
+    const { user, currentUser, logout } = useAuth();
 
-  const linkStyle = (path) =>
-    `block px-4 py-3 rounded-lg transition duration-200 ${location.pathname === path
-      ? 'bg-lavender text-ink font-semibold'
-      : 'text-lavender hover:bg-white/10'
-    }`
+    const location = useLocation();
+    const navigate = useNavigate();
 
-  return (
-    <aside className="fixed left-0 top-0 flex h-screen w-64 flex-col bg-ink">
+    const activeUser = user || currentUser;
+    const role = activeUser?.role;
 
-      <div className="border-b border-white/10 px-6 py-6">
-        <Link
-          to="/dashboard"
-          className="text-2xl font-bold text-lavender"
-        >
-          RAL HR
-        </Link>
+    const isAuthenticated = Boolean(activeUser);
+    const isHRAdmin = role === "HR Admin";
+    const isManager = role === "Manager";
 
-        <p className="mt-1 text-sm text-lavender/60">
-          Human Resources
-        </p>
-      </div>
+    // Dashboard path based on role
+    const dashboardPath = isHRAdmin ? "/dashboard" : "/attendance";
 
-      <nav className="flex-1 px-4 py-6">
+    function handleLogout() {
+        logout();
+        navigate("/sign-in");
+    }
 
-        <p className="mb-3 px-4 text-xs font-semibold uppercase tracking-wider text-lavender/60">
-          Menu
-        </p>
-        {user?.role === 'HR Admin' ? (
-          <>
-            <Link
-              to="/dashboard"
-              className={linkStyle('/dashboard')}
-            >
-              {t('nav.home')}
-            </Link>
-            {/* <Link
-              to="/user/create"
-              className={linkStyle('/user/create')}
-            >
-              Add Employee
-            </Link> */}
-            {/* <Link
-              to="/dep/create"
-              className={linkStyle('/dep/create')}
-            >
-              Add Department
-            </Link> */}
+    function isActive(path) {
+        return location.pathname === path;
+    }
 
-            <Link
-              to="/user/all"
-              className={linkStyle('/user/create')}
-            >
-              Employees
-            </Link>
+    function linkStyle(path) {
+        return `
+            flex items-center gap-3 rounded-lg px-4 py-3
+            transition duration-200
+            ${isActive(path)
+                ? "bg-lavender text-ink font-semibold"
+                : "text-lavender hover:bg-white/10"
+            }
+        `;
+    }
 
-            <Link
-              to="/dep/all"
-              className={linkStyle('/dep/all')}
-            >
-              Departments
-            </Link>
-          </>
-        ) : null}
+    return (
+        <aside className="fixed left-0 top-0 flex h-screen w-64 flex-col bg-ink">
+
+            {/* ================= LOGO ================= */}
+
+            <div className="border-b border-white/10 px-6 py-6">
+
+                <Link
+                    to={isAuthenticated ? dashboardPath : "/"}
+                    className="text-2xl font-bold text-lavender"
+                >
+                    RAL HR
+                </Link>
+
+                <p className="mt-1 text-sm text-lavender/60">
+                    Human Resources
+                </p>
+
+            </div>
 
 
-        {!user && (
-          <Link
-            to="/sign-in"
-            className={`${linkStyle('/sign-in')} mt-2`}
-          >
-            {t('nav.signIn')}
-          </Link>
-        )}
+            {/* ================= NAVIGATION ================= */}
 
-      </nav>
+            <nav className="flex-1 overflow-y-auto px-4 py-6">
 
-      <div className="border-t border-white/10 p-4">
+                <p className="mb-3 px-4 text-xs font-semibold uppercase tracking-wider text-lavender/60">
+                    Menu
+                </p>
 
-        <div className="mb-4">
-          <LanguageSwitcher />
-        </div>
 
-        {user && (
-          <button
-            onClick={logout}
-            className="w-full rounded-lg border border-stop/40 px-4 py-3 text-left font-medium text-red-200 transition hover:bg-stop hover:text-white"
-          >
-            {t('nav.signOut')}
-          </button>
+                {/* ================= NOT LOGGED IN ================= */}
 
-        )}
+                {!isAuthenticated && (
 
-      </div>
+                    <Link
+                        to="/sign-in"
+                        className={linkStyle("/sign-in")}
+                    >
+                        <LogIn size={18} />
 
-    </aside>
-  )
-}
+                        {t("nav.signIn", "Sign In")}
+                    </Link>
 
-export default Navbar
+                )}
 
-// import { Link } from 'react-router'
-// import { useAuth } from '../context/AuthContext'
-// import { useTranslation } from "react-i18next";
-// import LanguageSwitcher from "./LanguageSwitcher";
 
-// function Navbar() {
-//   const { t } = useTranslation();
+                {/* ================= LOGGED IN ================= */}
 
-//   const { logout, user} = useAuth()
-//   return (
-//     <nav>
-//       <Link to='/dashboard'>{t('nav.home')}</Link>
-//       {user
-//       ?
-//       (<>
-//       <button onClick={logout}>{t('nav.signOut')}</button>
-//       </>) :
-//       (<>
-//         {/* <Link to='/sign-up'>{t('nav.signUp')}</Link> */}
-//         <Link to='/sign-in'>{t('nav.signIn')}</Link>
-//       </>)}
-//     <LanguageSwitcher />
+                {isAuthenticated && (
 
-//     </nav>
-//   )
-// }
+                    <>
 
-// export default Navbar
+                        {/* Dashboard */}
+
+                        <Link
+                            to={dashboardPath}
+                            className={linkStyle(dashboardPath)}
+                        >
+                            <LayoutDashboard size={18} />
+
+                            {t("nav.dashboard", "Dashboard")}
+                        </Link>
+
+
+                        {/* ================= HR ADMIN ================= */}
+
+                        {isHRAdmin && (
+
+                            <>
+
+                                {/* Employees */}
+
+                                <Link
+                                    to="/user/all"
+                                    className={linkStyle("/user/all")}
+                                >
+                                    <Users size={18} />
+
+                                    Employees
+                                </Link>
+
+
+                                {/* Departments */}
+
+                                <Link
+                                    to="/dep/all"
+                                    className={linkStyle("/dep/all")}
+                                >
+                                    <Building2 size={18} />
+
+                                    Departments
+                                </Link>
+
+
+                                {/* Admin Attendance */}
+
+                                <Link
+                                    to="/admin/attendance"
+                                    className={linkStyle("/admin/attendance")}
+                                >
+                                    <Calendar size={18} />
+
+                                    Attendance
+                                </Link>
+
+                            </>
+
+                        )}
+
+
+                        {/* ================= EMPLOYEE / MANAGER ================= */}
+
+                        {!isHRAdmin && (
+
+                            <>
+
+                                {/* Punch */}
+
+                                <Link
+                                    to="/attendance/punch"
+                                    className={linkStyle("/attendance/punch")}
+                                >
+                                    <Fingerprint size={18} />
+
+                                    {t("nav.punch", "Punch In / Out")}
+                                </Link>
+
+
+                                {/* Attendance History */}
+
+                                <Link
+                                    to="/attendance/history"
+                                    className={linkStyle("/attendance/history")}
+                                >
+                                    <History size={18} />
+
+                                    {t("nav.myAttendance", "My Attendance")}
+                                </Link>
+
+
+                                {/* Payslips */}
+
+                                <Link
+                                    to={`/${activeUser?._id}/payslips`}
+                                    className={linkStyle(
+                                        `/${activeUser?._id}/payslips`
+                                    )}
+                                >
+                                    <CreditCard size={18} />
+
+                                    {t("nav.payslips", "Payslips")}
+                                </Link>
+
+                            </>
+
+                        )}
+
+
+                        {/* ================= MANAGER ================= */}
+
+                        {isManager && (
+
+                            <>
+
+                                <p className="mb-3 mt-6 px-4 text-xs font-semibold uppercase tracking-wider text-lavender/60">
+                                    Manager
+                                </p>
+
+
+                                <Link
+                                    to="/manager/team-attendance"
+                                    className={linkStyle(
+                                        "/manager/team-attendance"
+                                    )}
+                                >
+                                    <Users size={18} />
+
+                                    Team Attendance
+                                </Link>
+
+                            </>
+
+                        )}
+
+                    </>
+
+                )}
+
+            </nav>
+
+
+            {/* ================= USER / FOOTER ================= */}
+
+            <div className="border-t border-white/10 p-4">
+
+                {/* User Information */}
+
+                {isAuthenticated && (
+
+                    <div className="mb-4 rounded-lg bg-white/5 p-3">
+
+                        <p className="truncate text-sm font-semibold text-white">
+                            {activeUser?.fullName}
+                        </p>
+
+                        <p className="mt-1 text-xs text-lavender/60">
+                            {activeUser?.employeeCode}
+                        </p>
+
+                        <p className="mt-1 text-xs text-lavender/80">
+                            {activeUser?.role}
+                        </p>
+
+                    </div>
+
+                )}
+
+
+               
