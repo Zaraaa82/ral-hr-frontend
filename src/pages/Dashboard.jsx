@@ -23,25 +23,6 @@ function Dashboard() {
         </p>
       </div>
 
-      <div className="max-w-md rounded-2xl border border-rule bg-white p-6 shadow-sm">
-
-        <h2 className="text-xl font-semibold text-ink">
-          Employee Management
-        </h2>
-
-        <p className="mt-2 mb-6 text-sm text-soft">
-          Add a new employee to the HR system.
-        </p>
-
-        <Link
-          to="/user/create"
-          className="inline-flex items-center rounded-lg bg-ink px-5 py-3 font-semibold text-lavender transition hover:opacity-90"
-        >
-          {t('Add Employee')}
-        </Link>
-
-      </div>
-
     </main>
   )
 }

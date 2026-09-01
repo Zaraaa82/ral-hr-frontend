@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router";
-import { useAuth } from "@/context/AuthContext";
-import api from "@/services/api";
+import { useAuth } from "../../context/AuthContext";
+// import api from "@/services/api";
 
 import {
   Clock,
@@ -408,13 +408,12 @@ export default function EmployeePersonalDashboard() {
 
                     <div style={{ textAlign: "right" }}>
                       <span
-                        className={`badge ${
-                          rec.status === "Present"
+                        className={`badge ${rec.status === "Present"
                             ? "badge-emerald"
                             : rec.status === "Absent"
                               ? "badge-rose"
                               : "badge-purple"
-                        }`}
+                          }`}
                       >
                         {rec.status}
                       </span>
