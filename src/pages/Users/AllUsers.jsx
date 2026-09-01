@@ -107,12 +107,11 @@ function AllUsers() {
                     <>
                         <div className="overflow-hidden rounded-xl border border-rule bg-white shadow-sm">
 
-                            {/* <table className="w-full">
+
+                            <table className="w-full">
 
                                 <thead className="bg-card border-b border-rule">
-
                                     <tr>
-
                                         <th className="px-6 py-4 text-left text-sm font-semibold text-ink">
                                             Employee
                                         </th>
@@ -132,9 +131,7 @@ function AllUsers() {
                                         <th className="px-6 py-4 text-left text-sm font-semibold text-ink">
                                             Status
                                         </th>
-
                                     </tr>
-
                                 </thead>
 
 
@@ -145,17 +142,28 @@ function AllUsers() {
                                             key={user._id}
                                             className="transition hover:bg-card/50"
                                         >
-                                            <td className="px-6 py-4 text-mid">
+                                            <td className="px-6 py-4">
+
                                                 <Link
                                                     to={`/user/${user._id}`}
-                                                    className="font-medium hover:text-ink hover:underline"
+                                                    className="block"
                                                 >
-                                                    {user.fullName}
+                                                    <p className="font-semibold text-ink hover:underline">
+                                                        {user.fullName}
+                                                    </p>
+                                                    <p className="mt-1 text-sm text-soft">
+                                                        {user.employeeCode || 'No Employee Code'}
+                                                    </p>
+                                                    <p className="mt-1 text-sm text-soft">
+                                                        {user.workEmail}
+                                                    </p>
+
                                                 </Link>
+
                                             </td>
 
                                             <td className="px-6 py-4 text-mid">
-                                                {user.jobTitle}
+                                                {user.jobTitle || 'Not assigned'}
                                             </td>
 
                                             <td className="px-6 py-4 text-mid">
@@ -171,8 +179,10 @@ function AllUsers() {
                                                 <span
                                                     className={
                                                         user.status === 'active'
-                                                            ? 'rounded-full bg-good/10 px-3 py-1 text-sm text-good'
-                                                            : 'rounded-full bg-stop/10 px-3 py-1 text-sm text-stop'
+                                                            ? 'rounded-full bg-good/10 px-3 py-1 text-sm font-medium text-good'
+                                                            : user.status === 'left'
+                                                                ? 'rounded-full bg-stop/10 px-3 py-1 text-sm font-medium text-stop'
+                                                                : 'rounded-full bg-warn/10 px-3 py-1 text-sm font-medium text-warn'
                                                     }
                                                 >
                                                     {user.status}
@@ -185,111 +195,7 @@ function AllUsers() {
 
                                 </tbody>
 
-                            </table> */}
-<table className="w-full">
-
-    <thead className="bg-card border-b border-rule">
-        <tr>
-            <th className="px-6 py-4 text-left text-sm font-semibold text-ink">
-                Employee
-            </th>
-
-            <th className="px-6 py-4 text-left text-sm font-semibold text-ink">
-                Job Title
-            </th>
-
-            <th className="px-6 py-4 text-left text-sm font-semibold text-ink">
-                Department
-            </th>
-
-            <th className="px-6 py-4 text-left text-sm font-semibold text-ink">
-                Role
-            </th>
-
-            <th className="px-6 py-4 text-left text-sm font-semibold text-ink">
-                Status
-            </th>
-        </tr>
-    </thead>
-
-
-    <tbody className="divide-y divide-rule">
-
-        {currentUsers.map((user) => (
-            <tr
-                key={user._id}
-                className="transition hover:bg-card/50"
-            >
-
-                {/* Employee Details */}
-                <td className="px-6 py-4">
-
-                    <Link
-                        to={`/user/${user._id}`}
-                        className="block"
-                    >
-
-                        {/* Full Name */}
-                        <p className="font-semibold text-ink hover:underline">
-                            {user.fullName}
-                        </p>
-
-                        {/* Employee Code */}
-                        <p className="mt-1 text-sm text-soft">
-                            {user.employeeCode || 'No Employee Code'}
-                        </p>
-
-                        {/* Work Email */}
-                        <p className="mt-1 text-sm text-soft">
-                            {user.workEmail}
-                        </p>
-
-                    </Link>
-
-                </td>
-
-
-                {/* Job Title */}
-                <td className="px-6 py-4 text-mid">
-                    {user.jobTitle || 'Not assigned'}
-                </td>
-
-
-                {/* Department */}
-                <td className="px-6 py-4 text-mid">
-                    {user.department?.departmentName || 'No Department'}
-                </td>
-
-
-                {/* Role */}
-                <td className="px-6 py-4 text-mid">
-                    {user.role}
-                </td>
-
-
-                {/* Status */}
-                <td className="px-6 py-4">
-
-                    <span
-                        className={
-                            user.status === 'active'
-                                ? 'rounded-full bg-good/10 px-3 py-1 text-sm font-medium text-good'
-                                : user.status === 'left'
-                                    ? 'rounded-full bg-stop/10 px-3 py-1 text-sm font-medium text-stop'
-                                    : 'rounded-full bg-warn/10 px-3 py-1 text-sm font-medium text-warn'
-                        }
-                    >
-                        {user.status}
-                    </span>
-
-                </td>
-
-            </tr>
-        ))}
-
-    </tbody>
-
-</table>
+                            </table>
                         </div>
 
 
