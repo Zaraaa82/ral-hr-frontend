@@ -1,0 +1,527 @@
+.my-leave-page textarea {
+  font: inherit;
+}
+
+.my-leave-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.my-leave-new-button {
+  min-height: 2.625rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  color: #ffffff;
+  background-color: var(--manager-leave-purple);
+  border: 1px solid var(--manager-leave-purple);
+  border-radius: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    transform 150ms ease;
+}
+
+.my-leave-new-button:hover:not(:disabled) {
+  background-color: var(--manager-leave-purple-dark);
+  transform: translateY(-1px);
+}
+
+.my-leave-new-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.my-leave-new-button svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.my-leave-request-restriction {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.875rem 1rem;
+  color: #92400e;
+  background-color: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 0.875rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.my-leave-request-restriction svg {
+  width: 1rem;
+  height: 1rem;
+  flex: 0 0 1rem;
+}
+
+.my-leave-balance-section {
+  overflow: hidden;
+  background-color: #ffffff;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  border-radius: 1.5rem;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+}
+
+.my-leave-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.125rem 1.5rem;
+  border-bottom: 1px solid var(--manager-leave-rule);
+}
+
+.my-leave-section-heading h2 {
+  margin: 0;
+  color: var(--manager-leave-ink);
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.my-leave-section-heading p {
+  margin: 0.2rem 0 0;
+  color: var(--manager-leave-muted);
+  font-size: 0.6875rem;
+}
+
+.my-leave-section-heading > svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: var(--manager-leave-purple);
+}
+
+.my-leave-balance-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+  gap: 0.75rem;
+  padding: 1rem 1.5rem 1.5rem;
+}
+
+.my-leave-balance-card {
+  min-width: 0;
+  padding: 1rem;
+  background: linear-gradient(145deg, #ffffff, #faf5ff);
+  border: 1px solid #e9d5ff;
+  border-radius: 0.875rem;
+}
+
+.my-leave-balance-card > span {
+  display: block;
+  overflow: hidden;
+  color: var(--manager-leave-muted);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.my-leave-balance-card > strong {
+  display: block;
+  margin-top: 0.375rem;
+  color: var(--manager-leave-ink);
+  font-size: 1.5rem;
+  line-height: 1.2;
+}
+
+.my-leave-balance-card > strong small {
+  color: var(--manager-leave-muted);
+  font-size: 0.6875rem;
+  font-weight: 600;
+}
+
+.my-leave-balance-card > p {
+  margin: 0.375rem 0 0;
+  color: var(--manager-leave-soft);
+  font-size: 0.625rem;
+}
+
+.my-leave-no-balances {
+  grid-column: 1 / -1;
+  padding: 1.5rem;
+  color: var(--manager-leave-soft);
+  background-color: #f8fafc;
+  border: 1px dashed var(--manager-leave-border);
+  border-radius: 0.875rem;
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+.my-leave-page .my-leave-filters {
+  grid-template-columns: repeat(2, minmax(150px, 220px)) auto;
+}
+
+.my-leave-page .my-leave-table {
+  min-width: 850px;
+}
+
+.my-leave-page .my-leave-table th:nth-child(1) { width: 15%; }
+.my-leave-page .my-leave-table th:nth-child(2) { width: 30%; }
+.my-leave-page .my-leave-table th:nth-child(3) { width: 8%; }
+.my-leave-page .my-leave-table th:nth-child(4) { width: 15%; }
+.my-leave-page .my-leave-table th:nth-child(5) { width: 12%; }
+.my-leave-page .my-leave-table th:nth-child(6) { width: 20%; }
+
+.my-leave-request-modal {
+  max-width: 40rem;
+  max-height: calc(100vh - 2rem);
+  display: flex;
+  flex-direction: column;
+}
+
+.my-leave-request-modal form {
+  min-height: 0;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.my-leave-request-modal .manager-leave-modal-body {
+  overflow-y: auto;
+}
+
+.my-leave-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.my-leave-form-field {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.my-leave-form-field--full,
+.my-leave-form-error {
+  grid-column: 1 / -1;
+}
+
+.my-leave-form-field label {
+  color: var(--manager-leave-text);
+  font-size: 0.6875rem;
+  font-weight: 800;
+}
+
+.my-leave-form-field label span {
+  color: var(--manager-leave-soft);
+  font-weight: 600;
+}
+
+.my-leave-form-field select,
+.my-leave-form-field input,
+.my-leave-form-field textarea {
+  width: 100%;
+  color: var(--manager-leave-ink);
+  background-color: #ffffff;
+  border: 1px solid var(--manager-leave-border);
+  border-radius: 0.75rem;
+  outline: 0;
+  font-size: 0.75rem;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.my-leave-form-field select,
+.my-leave-form-field input {
+  height: 2.75rem;
+  padding: 0 0.75rem;
+}
+
+.my-leave-form-field textarea {
+  min-height: 6.5rem;
+  padding: 0.75rem;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.my-leave-form-field select:focus,
+.my-leave-form-field input:focus,
+.my-leave-form-field textarea:focus {
+  border-color: #c084fc;
+  box-shadow: 0 0 0 3px rgba(192, 132, 252, 0.15);
+}
+
+.my-leave-form-field select:disabled,
+.my-leave-form-field input:disabled,
+.my-leave-form-field textarea:disabled {
+  color: var(--manager-leave-soft);
+  background-color: #f8fafc;
+  cursor: not-allowed;
+}
+
+.my-leave-form-field > small {
+  color: var(--manager-leave-soft);
+  font-size: 0.625rem;
+  line-height: 1.5;
+}
+
+.my-leave-date-range {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.my-leave-date-range > svg {
+  position: absolute;
+  z-index: 1;
+  left: 0.875rem;
+  width: 1rem;
+  height: 1rem;
+  color: var(--manager-leave-purple);
+  pointer-events: none;
+}
+
+.my-leave-date-range .react-datepicker-wrapper,
+.my-leave-date-range .react-datepicker__input-container {
+  width: 100%;
+}
+
+.my-leave-date-range .react-datepicker__input-container input {
+  padding-left: 2.5rem;
+  cursor: pointer;
+}
+
+.my-leave-date-range .react-datepicker__close-icon::after {
+  background-color: var(--manager-leave-soft);
+  font-size: 0.875rem;
+}
+
+.my-leave-range-calendar {
+  overflow: hidden;
+  color: var(--manager-leave-text);
+  border: 1px solid var(--manager-leave-border);
+  border-radius: 1rem;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.16);
+  font-family: inherit;
+}
+
+.my-leave-range-calendar .react-datepicker__header {
+  background-color: #faf5ff;
+  border-bottom-color: #e9d5ff;
+}
+
+.my-leave-range-calendar .react-datepicker__current-month,
+.my-leave-range-calendar .react-datepicker__day-name {
+  color: var(--manager-leave-ink);
+}
+
+.my-leave-range-calendar .react-datepicker__day--in-range,
+.my-leave-range-calendar .react-datepicker__day--in-selecting-range {
+  color: var(--manager-leave-purple-dark);
+  background-color: #f3e8ff;
+}
+
+.my-leave-range-calendar .react-datepicker__day--range-start,
+.my-leave-range-calendar .react-datepicker__day--range-end,
+.my-leave-range-calendar .react-datepicker__day--selected {
+  color: #ffffff;
+  background-color: var(--manager-leave-purple);
+}
+
+.my-leave-range-calendar .react-datepicker__day--disabled {
+  color: #cbd5e1;
+  text-decoration: line-through;
+}
+
+.my-leave-submit-button {
+  color: #ffffff;
+  background-color: var(--manager-leave-purple);
+}
+
+.my-leave-submit-button:hover:not(:disabled) {
+  background-color: var(--manager-leave-purple-dark);
+}
+
+.my-leave-details-summary {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 1rem;
+  background-color: #f8fafc;
+  border: 1px solid var(--manager-leave-rule);
+  border-radius: 1rem;
+}
+
+.my-leave-details-summary-icon {
+  width: 2.75rem;
+  height: 2.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--manager-leave-purple-dark);
+  background-color: #f3e8ff;
+  border-radius: 9999px;
+}
+
+.my-leave-details-summary-icon svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.my-leave-details-summary h3 {
+  margin: 0;
+  color: var(--manager-leave-ink);
+  font-size: 0.9375rem;
+}
+
+.my-leave-details-summary p {
+  margin: 0.25rem 0 0;
+  color: var(--manager-leave-muted);
+  font-size: 0.6875rem;
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .my-leave-header-actions {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .my-leave-page .my-leave-filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .my-leave-balance-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .my-leave-header-actions,
+  .my-leave-header-actions > button {
+    width: 100%;
+  }
+
+  .my-leave-page .my-leave-filters,
+  .my-leave-balance-grid,
+  .my-leave-form {
+    grid-template-columns: 1fr;
+  }
+
+  .my-leave-form-field--full,
+  .my-leave-form-error {
+    grid-column: auto;
+  }
+
+  .my-leave-details-summary {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .my-leave-details-summary > .manager-leave-status {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+
+  .my-leave-details-summary p {
+    white-space: normal;
+  }
+
+  .my-leave-range-calendar .react-datepicker__month-container {
+    float: none;
+  }
+}
+
+/* Document Upload Field Custom Styling */
+.my-leave-file-input {
+  display: none !important;
+}
+
+.my-leave-file-upload {
+  display: flex !important;
+  align-items: center;
+  gap: 0.875rem;
+  width: 100%;
+  padding: 0.875rem 1.125rem;
+  margin-top: 0.25rem;
+  border: 2px dashed #e9d5ff;
+  border-radius: 0.875rem;
+  background-color: #faf5ff;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: all 150ms ease;
+}
+
+.my-leave-file-upload:hover {
+  border-color: var(--manager-leave-purple, #8b2cf5);
+  background-color: #f3e8ff;
+  transform: translateY(-1px);
+}
+
+.my-leave-file-upload--selected {
+  border: 1.5px solid #10b981;
+  background-color: #ecfdf5;
+}
+
+.my-leave-form .my-leave-file-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 2.5rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.625rem;
+  color: var(--manager-leave-purple, #8b2cf5);
+  background-color: #ffffff;
+  box-shadow: 0 1px 3px rgba(139, 44, 245, 0.12);
+}
+
+.my-leave-file-upload--selected .my-leave-file-icon {
+  color: #059669;
+  background-color: #ffffff;
+}
+
+.my-leave-form .my-leave-file-icon svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.my-leave-form .my-leave-file-content {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.my-leave-form .my-leave-file-content strong {
+  overflow: hidden;
+  color: var(--manager-leave-ink, #0f172a);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.my-leave-form .my-leave-file-content small {
+  color: var(--manager-leave-muted, #64748b);
+  font-size: 0.6875rem;
+  font-weight: 500;
+}
+
+.my-leave-form .my-leave-file-button {
+  flex-shrink: 0;
+  padding: 0.375rem 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  color: var(--manager-leave-text, #334155);
+  background-color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: background-color 150ms ease, border-color 150ms ease;
+}
+
+.my-leave-file-upload:hover .my-leave-file-button {
+  background-color: #f8fafc;
+  border-color: #cbd5e1;
+}
