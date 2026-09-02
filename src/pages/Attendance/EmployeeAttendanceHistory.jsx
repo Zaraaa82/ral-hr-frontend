@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { useAuth } from "../../context/AuthContext";
 import {
   History,
@@ -8,10 +8,6 @@ import {
   RefreshCw,
   AlertCircle,
   Download,
-  Search,
-  CheckCircle2,
-  AlertTriangle,
-  FileText,
 } from "lucide-react";
 
 const API_BASE_URL =
@@ -32,6 +28,38 @@ const MONTH_NAMES = [
   "December",
 ];
 
+// Helper to safely extract 1-indexed month number (1 - 12) from any attendance record
+function extractMonthFromRecord(record) {
+  if (
+    record.month !== undefined &&
+    record.month !== null &&
+    record.month !== ""
+  ) {
+    const num = Number(record.month);
+    if (!isNaN(num) && num >= 1 && num <= 12) return num;
+  }
+  const dateStr = record.date || record.inTime || record.createdAt;
+  if (dateStr) {
+    const d = new Date(dateStr);
+    if (!isNaN(d.getTime())) return d.getMonth() + 1;
+  }
+  return null;
+}
+
+// Helper to safely extract 4-digit year from any attendance record
+function extractYearFromRecord(record) {
+  if (record.year !== undefined && record.year !== null && record.year !== "") {
+    const num = Number(record.year);
+    if (!isNaN(num) && num >= 2000) return num;
+  }
+  const dateStr = record.date || record.inTime || record.createdAt;
+  if (dateStr) {
+    const d = new Date(dateStr);
+    if (!isNaN(d.getTime())) return d.getFullYear();
+  }
+  return null;
+}
+
 export default function EmployeeAttendanceHistory() {
   const { user, currentUser } = useAuth();
   const activeUser = user || currentUser;
@@ -40,21 +68,20 @@ export default function EmployeeAttendanceHistory() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // Filters
+  // Filters (Search Removed, Month & Year Active)
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [statusFilter, setStatusFilter] = useState("all");
-  const [searchTerm, setSearchTerm] = useState("");
 
-  const getAuthHeaders = () => {
+  const getAuthHeaders = useCallback(() => {
     const token = localStorage.getItem("token") || "";
     return {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     };
-  };
+  }, []);
 
-  const fetchAttendanceHistory = async () => {
+  const fetchAttendanceHistory = useCallback(async () => {
     try {
       setLoading(true);
       setError("");
@@ -72,8 +99,9 @@ export default function EmployeeAttendanceHistory() {
       );
 
       const data = await res.json();
-      if (!res.ok)
+      if (!res.ok) {
         throw new Error(data.message || "Failed to load attendance logs.");
+      }
 
       const rawLogs = Array.isArray(data) ? data : data.logs || data.data || [];
       setLogs(rawLogs);
@@ -83,36 +111,39 @@ export default function EmployeeAttendanceHistory() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedMonth, selectedYear, getAuthHeaders]);
 
   useEffect(() => {
     fetchAttendanceHistory();
-  }, [selectedMonth, selectedYear]);
+  }, [fetchAttendanceHistory]);
 
-  // Filtered attendance logs
+  // Filtered attendance logs with robust Month and Year matching
   const filteredLogs = useMemo(() => {
     return logs.filter((log) => {
-      // Status filter
+      // 1. Month Filter (Fixed)
+      if (selectedMonth !== "all") {
+        const logMonth = extractMonthFromRecord(log);
+        if (logMonth !== null && logMonth !== Number(selectedMonth)) {
+          return false;
+        }
+      }
+
+      // 2. Year Filter (Fixed)
+      if (selectedYear !== "all") {
+        const logYear = extractYearFromRecord(log);
+        if (logYear !== null && logYear !== Number(selectedYear)) {
+          return false;
+        }
+      }
+
+      // 3. Status Filter
       if (statusFilter !== "all" && log.status !== statusFilter) {
         return false;
       }
 
-      // Search term
-      if (searchTerm.trim()) {
-        const term = searchTerm.toLowerCase();
-        const dateStr = new Date(log.date).toLocaleDateString().toLowerCase();
-        const statusStr = (log.status || "").toLowerCase();
-        const flagsStr = (log.flags || []).join(" ").toLowerCase();
-        return (
-          dateStr.includes(term) ||
-          statusStr.includes(term) ||
-          flagsStr.includes(term)
-        );
-      }
-
       return true;
     });
-  }, [logs, statusFilter, searchTerm]);
+  }, [logs, selectedMonth, selectedYear, statusFilter]);
 
   // KPIs
   const stats = useMemo(() => {
@@ -121,7 +152,7 @@ export default function EmployeeAttendanceHistory() {
     let leaveCount = 0;
     let totalMinutes = 0;
 
-    logs.forEach((log) => {
+    filteredLogs.forEach((log) => {
       if (log.status === "Present" || log.status === "Half Day") {
         presentCount += 1;
         totalMinutes += Number(log.workedMinutes) || 0;
@@ -140,7 +171,7 @@ export default function EmployeeAttendanceHistory() {
       leaveCount,
       totalHours: (totalMinutes / 60).toFixed(1),
     };
-  }, [logs]);
+  }, [filteredLogs]);
 
   const formatTime = (timeIso) => {
     if (!timeIso) return "--:--";
@@ -184,7 +215,7 @@ export default function EmployeeAttendanceHistory() {
       "Flags",
     ];
     const rows = filteredLogs.map((l) => [
-      new Date(l.date).toISOString().slice(0, 10),
+      new Date(l.date || l.createdAt || Date.now()).toISOString().slice(0, 10),
       l.inTime ? formatTime(l.inTime) : "--",
       l.outTime ? formatTime(l.outTime) : "--",
       l.workedMinutes || 0,
@@ -291,8 +322,8 @@ export default function EmployeeAttendanceHistory() {
         </div>
       </div>
 
-      {/* Filter Toolbar */}
-      <div className="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-xs flex flex-wrap items-center justify-between gap-3 text-xs">
+      {/* Filter Toolbar (Search Removed, Month & Year Active) */}
+      <div className="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-xs flex flex-wrap items-center gap-3 text-xs">
         {/* Month Selector */}
         <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 font-semibold text-slate-700">
           <Calendar className="w-3.5 h-3.5 text-slate-400" />
@@ -342,17 +373,22 @@ export default function EmployeeAttendanceHistory() {
           </select>
         </div>
 
-        {/* Search */}
-        <div className="relative flex-1 min-w-[200px]">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search dates, flags..."
-            className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-slate-900 focus:outline-hidden font-medium"
-          />
-        </div>
+        {/* Reset Filters */}
+        {(selectedMonth !== new Date().getMonth() + 1 ||
+          selectedYear !== new Date().getFullYear() ||
+          statusFilter !== "all") && (
+          <button
+            type="button"
+            onClick={() => {
+              setSelectedMonth(new Date().getMonth() + 1);
+              setSelectedYear(new Date().getFullYear());
+              setStatusFilter("all");
+            }}
+            className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl font-bold transition cursor-pointer ml-auto"
+          >
+            Reset Filters
+          </button>
+        )}
       </div>
 
       {error && (
@@ -362,7 +398,7 @@ export default function EmployeeAttendanceHistory() {
         </div>
       )}
 
-      {/* History Table (Read-Only) */}
+      {/* History Table */}
       <div className="bg-white rounded-3xl border border-slate-200/80 shadow-xs overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs text-slate-600">
@@ -394,7 +430,9 @@ export default function EmployeeAttendanceHistory() {
                 </tr>
               ) : (
                 filteredLogs.map((log) => {
-                  const logDate = new Date(log.date);
+                  const logDate = new Date(
+                    log.date || log.inTime || Date.now(),
+                  );
                   const dayName = logDate.toLocaleDateString([], {
                     weekday: "short",
                   });
@@ -404,7 +442,7 @@ export default function EmployeeAttendanceHistory() {
 
                   return (
                     <tr
-                      key={log._id}
+                      key={log._id || Math.random()}
                       className="hover:bg-slate-50/70 transition"
                     >
                       <td className="px-5 py-4 font-bold text-slate-900 whitespace-nowrap">
