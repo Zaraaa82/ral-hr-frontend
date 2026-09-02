@@ -425,10 +425,8 @@ export default function AuditLogView() {
           >
             <option value="all">All Entities</option>
             <option value="Attendance">Attendance</option>
-            <option value="LeaveRequest">Leaves</option>
             <option value="Payslip">Payslip</option>
-            <option value="User">Users</option>
-            <option value="StatutorySettings">Settings</option>
+            <option value="LeaveRequest">Leaves</option>
           </select>
         </div>
 
