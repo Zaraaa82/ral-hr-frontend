@@ -4,7 +4,7 @@ import { Routes, Route, Link } from "react-router";
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
 import IsAdmin from "./components/IsAdmin";
-
+import AuditLogsPage from "./pages/AuditLogs/AuditLogView";
 // User
 import Homepage from "./pages/Homepage";
 import SignInPage from "./pages/SigninPage";
@@ -12,6 +12,7 @@ import Dashboard from "./pages/Dashboard";
 import AddUser from "./pages/Users/AddUser";
 import AllUsers from "./pages/Users/AllUsers";
 import UserDetails from "./pages/Users/UserDetails";
+import EditUser from './pages/Users/EditUser'
 
 // Attendance
 import EmployeePersonalDashboard from "./pages/Dashboards/EmployeePersonalDashboard";
@@ -39,14 +40,12 @@ import HRLeaveManagement from "./pages/Leave/HRLeaveManagement";
 function App() {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
-
       {/* Sidebar */}
       <Navbar />
 
       {/* Main content */}
       <main className="ml-64 min-h-screen">
         <Routes>
-
           {/* PUBLIC ROUTES */}
           <Route path="/" element={<Homepage />} />
 
@@ -78,6 +77,16 @@ function App() {
             element={
               <ProtectedRoute requiredRole="HR Admin">
                 <AddUser />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/user/edit/:userId"
+            element={
+              <ProtectedRoute requiredRole="HR Admin">
+                <IsAdmin>
+                  <EditUser />
+                </ IsAdmin>
               </ProtectedRoute>
             }
           />
@@ -194,6 +203,55 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/admin/audit-logs"
+            element={
+              <ProtectedRoute>
+                <AuditLogsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/audit-trail"
+            element={
+              <ProtectedRoute>
+                <AuditLogsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/audit"
+            element={
+              <ProtectedRoute>
+                <AuditLogsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/audit-logs"
+            element={
+              <ProtectedRoute>
+                <AuditLogsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/audit-trail"
+            element={
+              <ProtectedRoute>
+                <AuditLogsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/manager/audit-logs"
+            element={
+              <ProtectedRoute>
+                <AuditLogsPage />
+              </ProtectedRoute>
+            }
+          />
+
           {/* LEAVE */}
           <Route
             path="/leave"
@@ -228,14 +286,9 @@ function App() {
             element={
               <div className="flex min-h-screen items-center justify-center px-6">
                 <div className="text-center">
+                  <h2 className="text-3xl font-bold">404</h2>
 
-                  <h2 className="text-3xl font-bold">
-                    404
-                  </h2>
-
-                  <p className="mt-2 text-lg font-medium">
-                    Page Not Found
-                  </p>
+                  <p className="mt-2 text-lg font-medium">Page Not Found</p>
 
                   <p className="mt-2 text-sm text-slate-500">
                     The page you are looking for does not exist.
@@ -247,12 +300,10 @@ function App() {
                   >
                     Back to Dashboard
                   </Link>
-
                 </div>
               </div>
             }
           />
-
         </Routes>
       </main>
     </div>
@@ -260,261 +311,3 @@ function App() {
 }
 
 export default App;
-
-
-// import { Routes, Route, Link } from 'react-router'
-
-// // Components
-// import Navbar from "./components/Navbar";
-// import ProtectedRoute from "./components/ProtectedRoute";
-// import IsAdmin from './components/IsAdmin'
-
-// // User
-// import Homepage from "./pages/Homepage";
-// import SignInPage from "./pages/SigninPage";
-// import Dashboard from "./pages/Dashboard";
-// import AddUser from "./pages/Users/AddUser";
-// import AllUsers from './pages/Users/AllUsers'
-// import UserDetails from './pages/Users/UserDetails'
-
-// // Attendance Pages
-// import EmployeePersonalDashboard from "./pages/Dashboards/EmployeePersonalDashboard";
-// import AttendancePunch from "./pages/Attendance/AttendancePunch";
-// import EmployeeAttendanceHistory from "./pages/Attendance/EmployeeAttendanceHistory";
-// import ManagerTeamAttendance from "./pages/Attendance/ManagerTeamAttendance";
-// import AdminAttendanceCalendar from "./pages/Attendance/AdminAttendanceCalendar";
-// import HRPendingCorrections from "./pages/AuditLogs/HRPendingCorrections";
-
-// // Payroll
-// import Payslips from "./pages/Payslip/Payslips";
-
-
-// // Department
-// import AddDepartment from './pages/Department/AddDepartment';
-// import AllDepartments from './pages/Department/AllDepartments';
-
-// function App() {
-//   return (
-//     <div className="min-h-screen bg-slate-50 text-slate-900">
-//       <main>
-//         <Navbar />
-
-//         <Routes>
-//           {/* PUBLIC ROUTES */}
-
-//           <Route path="/" element={<Homepage />} />
-
-//           <Route path="/sign-in" element={<SignInPage />} />
-
-
-//           {/* HR Admin Dashboard */}
-//           <Route
-//             path="/dashboard"
-//             element={
-//               <ProtectedRoute requiredRole="HR Admin">
-//                 <Dashboard />
-//               </ProtectedRoute>
-//             }
-//           />
-
-//           {/* HR Admin Calendar */}
-//           <Route
-//             path="/admin/calendar"
-//             element={
-//               <ProtectedRoute requiredRole="HR Admin">
-//                 <AdminAttendanceCalendar />
-//               </ProtectedRoute>
-//             }
-//           />
-
-
-//           {/* Create User */}
-//           <Route
-//             path="/user/create"
-//             element={
-//               <ProtectedRoute requiredRole="HR Admin">
-//                 <AddUser />
-//               </ProtectedRoute>
-//             }
-//           />
-//           <Route
-//             path="/user/all"
-//             element={
-//               <IsAdmin>
-//                 <ProtectedRoute requiredRole="HR Admin">
-//                   <AllUsers />
-//                 </ProtectedRoute>
-//               </IsAdmin>
-//             }
-//           />
-//           <Route
-//             path="/user/:userId"
-//             element={
-//               <ProtectedRoute requiredRole="HR Admin">
-//                 <UserDetails />
-//               </ProtectedRoute>
-//             }
-//           />
-//           {/* ATTENDANCE */}
-
-
-//           {/* HR Attendance Corrections */}
-//           <Route
-//             path="/admin/attendance/corrections"
-//             element={
-//               <ProtectedRoute requiredRole="HR Admin">
-//                 <HRPendingCorrections />
-//               </ProtectedRoute>
-//             }
-//           />
-
-//           {/* ===================================================== */}
-//           {/* PAYROLL - HR ADMIN */}
-//           {/* ===================================================== */}
-
-//           <Route
-//             path="/admin/payslips"
-//             element={
-//               <ProtectedRoute requiredRole="HR Admin">
-//                 <Payslips />
-//               </ProtectedRoute>
-//             }
-//           />
-
-//           {/* ===================================================== */}
-//           {/* EMPLOYEE */}
-//           {/* ===================================================== */}
-
-//           {/* Employee Dashboard */}
-//           <Route
-//             path="/attendance"
-//             element={
-//               <ProtectedRoute>
-//                 <EmployeePersonalDashboard />
-//               </ProtectedRoute>
-//             }
-//           />
-
-//           {/* Punch In / Out */}
-//           <Route
-//             path="/attendance/punch"
-//             element={
-//               <ProtectedRoute>
-//                 <AttendancePunch />
-//               </ProtectedRoute>
-//             }
-//           />
-
-//           {/* Attendance History */}
-//           <Route
-//             path="/attendance/history"
-//             element={
-//               <ProtectedRoute>
-//                 <EmployeeAttendanceHistory />
-//               </ProtectedRoute>
-//             }
-//           />
-
-//           {/* ===================================================== */}
-//           {/* MANAGER */}
-//           {/* ===================================================== */}
-
-//           <Route
-//             path="/manager/team-attendance"
-//             element={
-//               <ProtectedRoute requiredRole="Manager">
-//                 <ManagerTeamAttendance />
-//               </ProtectedRoute>
-//             }
-//           />
-
-//           {/* ===================================================== */}
-//           {/* EMPLOYEE PAYSLIPS */}
-//           {/* ===================================================== */}
-
-//           {/* IMPORTANT:
-//               This replaces /:id/payslips
-//           */}
-
-//           <Route
-//             path="/payslips"
-//             element={
-//               <ProtectedRoute>
-//                 <Payslips />
-//               </ProtectedRoute>
-//             }
-//           />
-//           {/* PAYSLIPS */}
-
-
-//           <Route
-//             path="/:id/payslips"
-//             element={
-//               <ProtectedRoute>
-//                 <Payslips />
-//               </ProtectedRoute>
-//             }
-//           />
-
-//           {/* Department */}
-
-//           <Route
-//             path="/dep/create"
-//             element={
-//               <ProtectedRoute>
-//                 <IsAdmin>
-//                   <AddDepartment />
-//                 </IsAdmin>
-//               </ProtectedRoute>
-//             }
-//           />
-//           <Route
-//             path="/dep/all"
-//             element={
-//               <ProtectedRoute>
-//                 <IsAdmin>
-//                   <AllDepartments />
-//                 </IsAdmin>
-//               </ProtectedRoute>
-//             }
-//           />
-//           {/* 404 */}
-
-//           <Route
-//             path="*"
-//             element={
-//               <div className="flex min-h-screen items-center justify-center px-6">
-//                 <div className="text-center">
-
-//                   <h2 className="text-3xl font-bold text-ink">
-//                     404
-//                   </h2>
-
-//                   <p className="mt-2 text-lg font-medium text-mid">
-//                     Page Not Found
-//                   </p>
-
-//                   <p className="mt-2 text-sm text-soft">
-//                     The page you are looking for does not exist.
-//                   </p>
-
-//                   <Link
-//                     to="/dashboard"
-//                     className="mt-6 inline-block rounded-lg bg-ink px-5 py-3 font-medium text-lavender transition hover:opacity-90"
-//                   >
-//                     Back to Dashboard
-//                   </Link>
-
-//                 </div>
-//               </div>
-//             }
-//           />
-
-//         </Routes>
-
-//       </main>
-//     </div>
-//   );
-// }
-
-// export default App;

@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import "../../styles/Dashboard/EmployeePersonalDashboard.css";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_BASE_URL = import.meta.env.VITE_BACK_END_SERVER_URL;
 
 export default function EmployeePersonalDashboard() {
   const { user, currentUser } = useAuth();
@@ -54,9 +54,9 @@ export default function EmployeePersonalDashboard() {
           );
         }
 
-        // 2. Fetch Payslips via employee-specific route securely
+        // Fetch Payslips securely via the self-service route
         const payRes = await fetch(
-          `${API_BASE_URL}/payslips/employee/${employeeId}`,
+          `${API_BASE_URL}/payslips/my-payslips`, // or /payslips/me depending on your routes file
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -64,7 +64,9 @@ export default function EmployeePersonalDashboard() {
 
         if (payRes.ok) {
           const payData = await payRes.json();
-          setMyPayslips(Array.isArray(payData) ? payData : []);
+          setMyPayslips(
+            Array.isArray(payData) ? payData : payData.payslips || [],
+          );
         } else {
           console.warn(
             `Failed to fetch payslips: Server returned status ${payRes.status}`,
@@ -174,9 +176,9 @@ export default function EmployeePersonalDashboard() {
                 </span>
                 <span className="meta-item">
                   <Building2 className="meta-icon" />
-                  {activeUser.department?.departmentName ||
-                    activeUser.department?.name ||
-                    activeUser.department ||
+                  {activeUser.Department?.DepartmentName ||
+                    activeUser.Department?.name ||
+                    activeUser.Department ||
                     "General"}
                 </span>
                 <span className="meta-item">
@@ -290,9 +292,9 @@ export default function EmployeePersonalDashboard() {
               <div className="profile-detail-row">
                 <span className="profile-label">Department</span>
                 <span className="profile-value">
-                  {activeUser.department?.departmentName ||
-                    activeUser.department?.name ||
-                    activeUser.department ||
+                  {activeUser.Department?.DepartmentName ||
+                    activeUser.Department?.name ||
+                    activeUser.Department ||
                     "General"}
                 </span>
               </div>
@@ -408,12 +410,13 @@ export default function EmployeePersonalDashboard() {
 
                     <div style={{ textAlign: "right" }}>
                       <span
-                        className={`badge ${rec.status === "Present"
+                        className={`badge ${
+                          rec.status === "Present"
                             ? "badge-emerald"
                             : rec.status === "Absent"
                               ? "badge-rose"
                               : "badge-purple"
-                          }`}
+                        }`}
                       >
                         {rec.status}
                       </span>

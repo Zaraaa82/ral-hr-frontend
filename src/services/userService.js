@@ -21,6 +21,11 @@ async function getUserById(userId) {
     return response.data
 }
 
+async function updateEmployee(userId, formData) {
+    const response = await api.put(`/user/edit/${userId}`, formData)
+    return response.data
+}
+
 async function deactivateUser(userId) {
     const response = await api.put(
         `/user/deactivate/${userId}`
@@ -37,4 +42,4 @@ async function reactivateUser(userId) {
     return response.data;
 }
 
-export { createUser, allUsers, allManager, getUserById, deactivateUser, reactivateUser }
+export { createUser, allUsers, allManager, getUserById, deactivateUser, reactivateUser, updateEmployee }
