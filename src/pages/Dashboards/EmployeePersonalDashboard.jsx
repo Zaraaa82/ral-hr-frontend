@@ -176,9 +176,9 @@ export default function EmployeePersonalDashboard() {
                 </span>
                 <span className="meta-item">
                   <Building2 className="meta-icon" />
-                  {activeUser.department?.departmentName ||
-                    activeUser.department?.name ||
-                    activeUser.department ||
+                  {activeUser.Department?.DepartmentName ||
+                    activeUser.Department?.name ||
+                    activeUser.Department ||
                     "General"}
                 </span>
                 <span className="meta-item">
@@ -292,9 +292,9 @@ export default function EmployeePersonalDashboard() {
               <div className="profile-detail-row">
                 <span className="profile-label">Department</span>
                 <span className="profile-value">
-                  {activeUser.department?.departmentName ||
-                    activeUser.department?.name ||
-                    activeUser.department ||
+                  {activeUser.Department?.DepartmentName ||
+                    activeUser.Department?.name ||
+                    activeUser.Department ||
                     "General"}
                 </span>
               </div>
