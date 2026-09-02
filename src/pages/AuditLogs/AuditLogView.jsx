@@ -2,7 +2,6 @@ import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { useAuth } from "../../context/AuthContext";
 import {
   Shield,
-  Search,
   Filter,
   RefreshCw,
   Eye,
@@ -16,6 +15,11 @@ import {
 
 const API_BASE_URL =
   import.meta.env.VITE_BACK_END_SERVER_URL || "http://localhost:3000";
+
+const MONTH_NAMES = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December",
+];
 
 const SAMPLE_AUDIT_LOGS = [
   {
@@ -34,8 +38,7 @@ const SAMPLE_AUDIT_LOGS = [
     changedBy: { fullName: "Ali Al-Hassan", role: "Manager" },
     entityType: "Attendance",
     action: "CORRECT",
-    reason:
-      "Approved late clock-in regularisation request (Biometric reader sync delay)",
+    reason: "Approved late clock-in regularisation request (Biometric reader sync delay)",
     old_value: { inTime: "08:42", status: "Late" },
     new_value: { inTime: "08:00", status: "Present" },
   },
@@ -43,14 +46,40 @@ const SAMPLE_AUDIT_LOGS = [
     _id: "log-103",
     timestamp: new Date(Date.now() - 86400000).toISOString(),
     changedBy: { fullName: "System Admin", role: "HR Admin" },
-    entityType: "Payroll",
+    entityType: "Payslip",
     action: "APPROVE",
-    reason:
-      "Finalized and locked monthly salary disbursement for Operations Department",
+    reason: "Finalized and locked monthly salary disbursement for Operations Department",
     old_value: { status: "pending" },
     new_value: { status: "approved" },
   },
 ];
+
+// Helper to extract 1-indexed month number (1 - 12) from logs
+function extractMonthFromLog(log) {
+  if (log.month !== undefined && log.month !== null) {
+    const num = Number(log.month);
+    if (!isNaN(num) && num >= 1 && num <= 12) return num;
+  }
+  const dateStr = log.createdAt || log.timestamp || log.date;
+  if (dateStr) {
+    const d = new Date(dateStr);
+    if (!isNaN(d.getTime())) return d.getMonth() + 1;
+  }
+  return null;
+}
+
+function extractYearFromLog(log) {
+  if (log.year !== undefined && log.year !== null) {
+    const num = Number(log.year);
+    if (!isNaN(num)) return num;
+  }
+  const dateStr = log.createdAt || log.timestamp || log.date;
+  if (dateStr) {
+    const d = new Date(dateStr);
+    if (!isNaN(d.getTime())) return d.getFullYear();
+  }
+  return null;
+}
 
 export default function AuditLogView() {
   const { user, currentUser } = useAuth();
@@ -66,13 +95,12 @@ export default function AuditLogView() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Filters
-  const [searchTerm, setSearchTerm] = useState("");
+  // Filters (Search Removed, Month & Year Added)
+  const [monthFilter, setMonthFilter] = useState("all");
+  const [yearFilter, setYearFilter] = useState("all");
   const [entityFilter, setEntityFilter] = useState("all");
   const [actionFilter, setActionFilter] = useState("all");
   const [departmentFilter, setDepartmentFilter] = useState("all");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
 
   // Diff Modal
   const [selectedLog, setSelectedLog] = useState(null);
@@ -85,7 +113,7 @@ export default function AuditLogView() {
     };
   }, []);
 
-  // Fetch employees list for filtering
+  // Fetch employees list for department filtering
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
@@ -104,29 +132,21 @@ export default function AuditLogView() {
     fetchEmployees();
   }, [getAuthHeaders]);
 
-  // Fetch Audit Logs with multi-key normalization
+  // Fetch Audit Logs
   const fetchAuditLogs = useCallback(async () => {
     try {
       setLoading(true);
       setError("");
 
-      const params = new URLSearchParams();
-      if (startDate) params.append("startDate", startDate);
-      if (endDate) params.append("endDate", endDate);
-
-      const res = await fetch(
-        `${API_BASE_URL}/audit-logs?${params.toString()}`,
-        {
-          headers: getAuthHeaders(),
-        },
-      );
+      const res = await fetch(`${API_BASE_URL}/audit-logs`, {
+        headers: getAuthHeaders(),
+      });
 
       const data = await res.json();
       if (!res.ok) {
         throw new Error(data.message || "Failed to load audit trail.");
       }
 
-      // Extract logs regardless of backend response format
       let rawLogs = [];
       if (Array.isArray(data)) {
         rawLogs = data;
@@ -140,7 +160,6 @@ export default function AuditLogView() {
         rawLogs = data.data;
       }
 
-      // If backend returns empty array, use initial mock audit records so UI is functional
       if (rawLogs.length === 0) {
         setLogs(SAMPLE_AUDIT_LOGS);
       } else {
@@ -159,19 +178,18 @@ export default function AuditLogView() {
         }
       }
     } catch (err) {
-      console.error("Audit log error:", err);
-      // Fallback to sample logs so the page still functions
+      console.warn("Audit log fallback:", err);
       setLogs(SAMPLE_AUDIT_LOGS);
     } finally {
       setLoading(false);
     }
-  }, [startDate, endDate, isManager, isHRAdmin, activeUser, getAuthHeaders]);
+  }, [isManager, isHRAdmin, activeUser, getAuthHeaders]);
 
   useEffect(() => {
     fetchAuditLogs();
   }, [fetchAuditLogs]);
 
-  // Extract unique departments for HR filter
+  // Unique departments for filter
   const departments = useMemo(() => {
     const map = new Map();
     employees.forEach((emp) => {
@@ -207,82 +225,63 @@ export default function AuditLogView() {
     );
   };
 
-  // Client-side search and filters
+  // Robust Month & Year filtering
   const filteredLogs = useMemo(() => {
     return logs.filter((log) => {
-      // Entity Filter
+      // 1. Month Filter (Fixed)
+      if (monthFilter !== "all") {
+        const logMonth = extractMonthFromLog(log);
+        if (logMonth !== Number(monthFilter)) {
+          return false;
+        }
+      }
+
+      // 2. Year Filter
+      if (yearFilter !== "all") {
+        const logYear = extractYearFromLog(log);
+        if (logYear !== Number(yearFilter)) {
+          return false;
+        }
+      }
+
+      // 3. Entity Filter
       if (entityFilter !== "all") {
         const logEntity = (log.entityType || "").toLowerCase();
         if (logEntity !== entityFilter.toLowerCase()) return false;
       }
 
-      // Action Filter
+      // 4. Action Filter
       if (actionFilter !== "all") {
         const logAction = (log.action || "").toLowerCase();
-        const targetAction = actionFilter.toLowerCase();
+        const target = actionFilter.toLowerCase();
 
-        if (
-          targetAction === "create" &&
-          !logAction.includes("create") &&
-          !logAction.includes("clock_in") &&
-          !logAction.includes("upload")
-        ) {
+        if (target === "create" && !logAction.includes("create") && !logAction.includes("clock_in")) {
           return false;
-        } else if (
-          targetAction === "update" &&
-          !logAction.includes("update") &&
-          !logAction.includes("edit")
-        ) {
+        } else if (target === "update" && !logAction.includes("update") && !logAction.includes("edit")) {
           return false;
-        } else if (
-          targetAction === "correct" &&
-          !logAction.includes("correct")
-        ) {
+        } else if (target === "correct" && !logAction.includes("correct")) {
           return false;
-        } else if (
-          targetAction === "approve" &&
-          !logAction.includes("approve")
-        ) {
+        } else if (target === "approve" && !logAction.includes("approve")) {
           return false;
-        } else if (targetAction === "reject" && !logAction.includes("reject")) {
+        } else if (target === "reject" && !logAction.includes("reject")) {
           return false;
-        } else if (targetAction === "delete" && !logAction.includes("delete")) {
+        } else if (target === "delete" && !logAction.includes("delete")) {
           return false;
         }
       }
 
-      // Department Filter
+      // 5. Department Filter
       if (departmentFilter !== "all") {
         const empDept =
           log.changedBy?.department?._id || log.changedBy?.department || "";
-        if (empDept.toString() !== departmentFilter.toString()) {
+        if (empDept.toString().toLowerCase() !== departmentFilter.toString().toLowerCase()) {
           return false;
         }
-      }
-
-      // Text Search Query
-      if (searchTerm.trim()) {
-        const term = searchTerm.toLowerCase();
-        const actorName = getActorName(log).toLowerCase();
-        const entity = (log.entityType || "").toLowerCase();
-        const action = (log.action || "").toLowerCase();
-        const reason = (log.reason || "").toLowerCase();
-        const oldStr = JSON.stringify(log.old_value || {}).toLowerCase();
-        const newStr = JSON.stringify(log.new_value || {}).toLowerCase();
-
-        return (
-          actorName.includes(term) ||
-          entity.includes(term) ||
-          action.includes(term) ||
-          reason.includes(term) ||
-          oldStr.includes(term) ||
-          newStr.includes(term)
-        );
       }
 
       return true;
     });
-  }, [logs, entityFilter, actionFilter, departmentFilter, searchTerm]);
+  }, [logs, monthFilter, yearFilter, entityFilter, actionFilter, departmentFilter]);
 
   const handleExportCSV = () => {
     if (filteredLogs.length === 0) return;
@@ -305,7 +304,7 @@ export default function AuditLogView() {
     link.setAttribute("href", encodedUri);
     link.setAttribute(
       "download",
-      `RAL_HR_Audit_Trail_${new Date().toISOString().slice(0, 10)}.csv`,
+      `RAL_HR_Audit_Trail_${new Date().toISOString().slice(0, 10)}.csv`
     );
     document.body.appendChild(link);
     link.click();
@@ -314,21 +313,13 @@ export default function AuditLogView() {
 
   const getActionBadgeColor = (action) => {
     const act = (action || "").toUpperCase();
-    if (
-      act.includes("CREATE") ||
-      act.includes("APPROVE") ||
-      act.includes("APPLY")
-    ) {
+    if (act.includes("CREATE") || act.includes("APPROVE") || act.includes("APPLY")) {
       return "bg-emerald-50 text-emerald-700 border-emerald-200";
     }
     if (act.includes("DELETE") || act.includes("REJECT")) {
       return "bg-rose-50 text-rose-700 border-rose-200";
     }
-    if (
-      act.includes("UPDATE") ||
-      act.includes("EDIT") ||
-      act.includes("CORRECT")
-    ) {
+    if (act.includes("UPDATE") || act.includes("EDIT") || act.includes("CORRECT")) {
       return "bg-amber-50 text-amber-800 border-amber-200";
     }
     return "bg-purple-50 text-purple-700 border-purple-200";
@@ -354,7 +345,7 @@ export default function AuditLogView() {
           </h1>
           <p className="text-xs text-slate-500 mt-0.5">
             {isHRAdmin
-              ? "Immutable log tracking all modifications across Users, Attendance, Leaves, Documents, and Payroll."
+              ? "Immutable log tracking all modifications across Users, Attendance, Leaves, and Payroll."
               : "Review audit history and punch modifications for your team members."}
           </p>
         </div>
@@ -382,38 +373,40 @@ export default function AuditLogView() {
         </div>
       </div>
 
-      {/* Filter Toolbar */}
-      <div className="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-xs flex flex-wrap items-center justify-between gap-3 text-xs">
-        {/* Search */}
-        <div className="relative flex-1 min-w-[200px]">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search by actor, reason, record ID, or payload..."
-            className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-slate-900 focus:outline-hidden font-medium"
-          />
+      {/* Filter Toolbar (Search Removed, Month & Year Active) */}
+      <div className="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-xs flex flex-wrap items-center gap-3 text-xs">
+        {/* Month Selector */}
+        <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 font-semibold text-slate-700">
+          <Calendar className="w-3.5 h-3.5 text-slate-400" />
+          <select
+            value={monthFilter}
+            onChange={(e) => setMonthFilter(e.target.value)}
+            className="bg-transparent focus:outline-hidden cursor-pointer"
+          >
+            <option value="all">All Months</option>
+            {MONTH_NAMES.map((name, i) => (
+              <option key={name} value={i + 1}>
+                {name}
+              </option>
+            ))}
+          </select>
         </div>
 
-        {/* HR Department Filter */}
-        {isHRAdmin && (
-          <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 font-semibold text-slate-700">
-            <Building2 className="w-3.5 h-3.5 text-slate-400" />
-            <select
-              value={departmentFilter}
-              onChange={(e) => setDepartmentFilter(e.target.value)}
-              className="bg-transparent focus:outline-hidden cursor-pointer"
-            >
-              <option value="all">All Departments</option>
-              {departments.map((d) => (
-                <option key={d.id} value={d.id}>
-                  {d.name}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
+        {/* Year Selector */}
+        <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 font-semibold text-slate-700">
+          <select
+            value={yearFilter}
+            onChange={(e) => setYearFilter(e.target.value)}
+            className="bg-transparent focus:outline-hidden cursor-pointer"
+          >
+            <option value="all">All Years</option>
+            {[2024, 2025, 2026, 2027].map((y) => (
+              <option key={y} value={y}>
+                {y}
+              </option>
+            ))}
+          </select>
+        </div>
 
         {/* Entity Filter */}
         <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 font-semibold text-slate-700">
@@ -450,50 +443,43 @@ export default function AuditLogView() {
           </select>
         </div>
 
-        {/* Date Filter */}
-        <div className="flex items-center gap-2">
-          <input
-            type="date"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-            className="bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 text-slate-700 font-semibold cursor-pointer"
-          />
-          <span className="text-slate-400">to</span>
-          <input
-            type="date"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-            className="bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 text-slate-700 font-semibold cursor-pointer"
-          />
-          <button
-            type="button"
-            onClick={fetchAuditLogs}
-            className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold transition cursor-pointer"
-          >
-            Apply
-          </button>
-        </div>
+        {/* HR Department Filter */}
+        {isHRAdmin && (
+          <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 font-semibold text-slate-700">
+            <Building2 className="w-3.5 h-3.5 text-slate-400" />
+            <select
+              value={departmentFilter}
+              onChange={(e) => setDepartmentFilter(e.target.value)}
+              className="bg-transparent focus:outline-hidden cursor-pointer"
+            >
+              <option value="all">All Departments</option>
+              {departments.map((d) => (
+                <option key={d.id} value={d.id}>
+                  {d.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         {/* Reset Filters */}
-        {(searchTerm ||
+        {(monthFilter !== "all" ||
+          yearFilter !== "all" ||
           entityFilter !== "all" ||
           actionFilter !== "all" ||
-          departmentFilter !== "all" ||
-          startDate ||
-          endDate) && (
+          departmentFilter !== "all") && (
           <button
             type="button"
             onClick={() => {
-              setSearchTerm("");
+              setMonthFilter("all");
+              setYearFilter("all");
               setEntityFilter("all");
               setActionFilter("all");
               setDepartmentFilter("all");
-              setStartDate("");
-              setEndDate("");
             }}
-            className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl font-bold transition cursor-pointer"
+            className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl font-bold transition cursor-pointer ml-auto"
           >
-            Reset
+            Reset Filters
           </button>
         )}
       </div>
@@ -530,7 +516,7 @@ export default function AuditLogView() {
               ) : filteredLogs.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="text-center py-10 text-slate-400">
-                    No matching audit records found.
+                    No matching audit records found for this period.
                   </td>
                 </tr>
               ) : (
@@ -544,7 +530,7 @@ export default function AuditLogView() {
                     >
                       <td className="px-5 py-4 font-mono text-slate-500 whitespace-nowrap">
                         {new Date(
-                          log.createdAt || log.timestamp || Date.now(),
+                          log.createdAt || log.timestamp || Date.now()
                         ).toLocaleString([], {
                           month: "short",
                           day: "numeric",
@@ -577,7 +563,7 @@ export default function AuditLogView() {
                       <td className="px-5 py-4">
                         <span
                           className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase border ${getActionBadgeColor(
-                            log.action,
+                            log.action
                           )}`}
                         >
                           {log.action || "UPDATE"}
@@ -650,7 +636,7 @@ export default function AuditLogView() {
                   {new Date(
                     selectedLog.createdAt ||
                       selectedLog.timestamp ||
-                      Date.now(),
+                      Date.now()
                   ).toLocaleString()}
                 </div>
                 {selectedLog.reason && (
@@ -702,4 +688,5 @@ export default function AuditLogView() {
       )}
     </div>
   );
+}
 }
