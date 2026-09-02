@@ -196,13 +196,7 @@ function Navbar() {
                   </span>
                 </Link>
 
-                <Link
-                  to={`/${activeUser?._id}/payslips`}
-                  className={linkStyle(`/${activeUser?._id}/payslips`)}
-                >
-                  <CreditCard className="w-4 h-4" />
-                  <span>{t("nav.payslips", "My Payslips")}</span>
-                </Link>
+              
               </>
             )}
           </>
