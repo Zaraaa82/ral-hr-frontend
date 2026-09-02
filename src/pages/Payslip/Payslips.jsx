@@ -161,7 +161,7 @@ function isReleasedForEmployee(payslip) {
   return currentDay >= 25;
 }
 
-export default function Payslips() {
+export default function Payslips({ managementMode = false }) {
   const { user, currentUser } = useAuth();
 
   const activeUser = user || currentUser;
@@ -214,9 +214,7 @@ export default function Payslips() {
       setLoading(true);
       setError("");
 
-      const endpoint = isHRAdmin
-        ? `${API_BASE_URL}/payslips`
-        : `${API_BASE_URL}/payslips/my`;
+      const endpoint = managementMode ? `${API_BASE_URL}/payslips` : `${API_BASE_URL}/payslips/my`;
 
       const response = await fetch(endpoint, {
         method: "GET",
@@ -304,23 +302,22 @@ export default function Payslips() {
 
     fetchPayslips();
 
-    if (isHRAdmin) {
+    if (managementMode && isHRAdmin) {
       fetchEmployees();
     }
-  }, [activeUser?._id, activeUser?.id, isHRAdmin]);
+  }, [activeUser?._id, activeUser?.id, isHRAdmin, managementMode]);
 
   // =====================================================
   // VISIBLE PAYSLIPS
   // =====================================================
 
   const visiblePayslips = useMemo(() => {
-    if (isHRAdmin) {
+    if (managementMode) {
       return payslips;
     }
 
     return payslips.filter(isReleasedForEmployee);
-  }, [payslips, isHRAdmin]);
-
+  }, [payslips, managementMode]);
   // =====================================================
   // PENDING APPROVALS
   // =====================================================
@@ -666,23 +663,23 @@ export default function Payslips() {
             <CreditCard className="w-3.5 h-3.5" />
 
             <span>
-              {isHRAdmin ? "Payroll Management" : "Salary Statements"}
+              {managementMode ? "Payroll Management" : "Salary Statements"}
             </span>
           </div>
 
           <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
-            {isHRAdmin ? "Payroll & Payslip Management" : "My Monthly Payslips"}
+            {managementMode ? "Payroll & Payslip Management" : "My Monthly Payslips"}
           </h1>
 
           <p className="text-xs text-slate-500 mt-0.5">
-            {isHRAdmin
+            {managementMode
               ? "Generate, adjust, review, and approve employee monthly payslips."
               : "Official salary statements released after HR approval on the 25th of each month."}
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5">
-          {isHRAdmin && (
+          {managementMode && (
             <>
               <button
                 type="button"
@@ -728,7 +725,7 @@ export default function Payslips() {
 
       {/* EMPLOYEE POLICY */}
 
-      {!isHRAdmin && (
+      {!managementMode && (
         <div className="bg-purple-50/70 rounded-2xl p-4 border border-purple-100 flex items-start gap-3 text-xs text-purple-900">
           <Calendar className="w-4 h-4 text-purple-600 shrink-0 mt-0.5" />
 
@@ -762,13 +759,13 @@ export default function Payslips() {
           <table className="w-full text-left text-xs text-slate-600">
             <thead className="bg-slate-50 border-b border-slate-100 text-slate-700 font-bold uppercase text-[10px]">
               <tr>
-                {isHRAdmin && <th className="px-5 py-3.5">Employee</th>}
+                {managementMode && <th className="px-5 py-3.5">Employee</th>}
 
-                {isHRAdmin && <th className="px-5 py-3.5">Code</th>}
+                {managementMode && <th className="px-5 py-3.5">Code</th>}
 
                 <th className="px-5 py-3.5">Period</th>
 
-                {isHRAdmin && <th className="px-5 py-3.5">Department</th>}
+                {managementMode && <th className="px-5 py-3.5">Department</th>}
 
                 <th className="px-5 py-3.5">Basic Salary</th>
 
@@ -788,7 +785,7 @@ export default function Payslips() {
               {loading ? (
                 <tr>
                   <td
-                    colSpan={isHRAdmin ? 10 : 6}
+                    colSpan={managementMode ? 10 : 6}
                     className="text-center py-10 text-slate-400"
                   >
                     <div className="w-6 h-6 border-2 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
@@ -798,10 +795,10 @@ export default function Payslips() {
               ) : visiblePayslips.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={isHRAdmin ? 10 : 6}
+                    colSpan={managementMode ? 10 : 6}
                     className="text-center py-10 text-slate-400"
                   >
-                    {isHRAdmin
+                    {managementMode
                       ? "No payslips generated yet. Click '+ Generate Payslip' to start payroll calculation."
                       : "No approved payslips have been released for your account yet."}
                   </td>
@@ -812,7 +809,7 @@ export default function Payslips() {
                     key={payslip._id}
                     className="hover:bg-slate-50/70 transition"
                   >
-                    {isHRAdmin && (
+                    {managementMode && (
                       <td className="px-5 py-4">
                         <strong className="text-slate-900 block font-semibold">
                           {payslip.employee?.fullName ||
@@ -822,7 +819,7 @@ export default function Payslips() {
                       </td>
                     )}
 
-                    {isHRAdmin && (
+                    {managementMode && (
                       <td className="px-5 py-4 font-mono text-slate-400">
                         {payslip.employee?.employeeCode || "--"}
                       </td>
@@ -835,7 +832,7 @@ export default function Payslips() {
                       </span>
                     </td>
 
-                    {isHRAdmin && (
+                    {managementMode && (
                       <td className="px-5 py-4 text-slate-500">
                         {payslip.employee?.department?.departmentName ||
                           payslip.employee?.department?.name ||
@@ -883,7 +880,7 @@ export default function Payslips() {
                           <span>View</span>
                         </button>
 
-                        {isHRAdmin &&
+                        {managementMode &&
                           payslip.status !== "approved" &&
                           !payslip.locked && (
                             <>
