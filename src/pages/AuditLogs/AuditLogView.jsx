@@ -21,7 +21,7 @@ const SAMPLE_AUDIT_LOGS = [
   {
     _id: "log-101",
     timestamp: new Date().toISOString(),
-    changedBy: { fullName: "Fatema Buarki", role: "HR Admin" },
+    changedBy: { fullName: "Fatema alawi", role: "HR Admin" },
     entityType: "StatutorySettings",
     action: "UPDATE",
     reason: "Updated SIO Pension Rates for Bahraini nationals to 15%",
