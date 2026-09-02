@@ -379,7 +379,6 @@ export default function AuditLogView() {
             className="bg-transparent focus:outline-hidden cursor-pointer"
           >
             <option value="all">All Actions</option>
-            <option value="create">Create / Clock In</option>
             <option value="correct">Correction</option>
             <option value="approve">Approve</option>
             <option value="reject">Reject</option>
