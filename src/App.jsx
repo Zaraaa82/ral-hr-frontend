@@ -1,5 +1,4 @@
-import { Routes, Route, Link } from "react-router";
-
+import { Routes, Route, Link, useLocation } from "react-router";
 // Components
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -38,28 +37,23 @@ import HRLeaveManagement from "./pages/Leave/HRLeaveManagement";
 
 
 function App() {
+  const location = useLocation();
+
+    const hideNavbar = location.pathname === "/sign-in" || location.pathname === "/";
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
       {/* Sidebar */}
-      <Navbar />
+      {!hideNavbar && <Navbar />}
+
 
       {/* Main content */}
-      <main className="ml-64 min-h-screen">
+      <main className={hideNavbar ? "min-h-screen" : "ml-64 min-h-screen"}>
         <Routes>
           {/* PUBLIC ROUTES */}
           <Route path="/" element={<Homepage />} />
 
           <Route path="/sign-in" element={<SignInPage />} />
 
-          {/* HR ADMIN DASHBOARD */}
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute requiredRole="HR Admin">
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
 
           {/* HR ADMIN CALENDAR */}
           <Route
@@ -126,14 +120,14 @@ function App() {
             path="/admin/payslips"
             element={
               <ProtectedRoute requiredRole="HR Admin">
-                <Payslips />
+                <Payslips managementMode={true}/>
               </ProtectedRoute>
             }
           />
 
-          {/* EMPLOYEE DASHBOARD */}
+          {/* DASHBOARD */}
           <Route
-            path="/attendance"
+            path="/dashboard"
             element={
               <ProtectedRoute>
                 <EmployeePersonalDashboard />
@@ -176,7 +170,7 @@ function App() {
             path="/payslips"
             element={
               <ProtectedRoute>
-                <Payslips />
+                <Payslips managementMode={false} />
               </ProtectedRoute>
             }
           />
