@@ -1,0 +1,1231 @@
+:root {
+  --manager-leave-ink: #0f172a;
+  --manager-leave-text: #334155;
+  --manager-leave-muted: #64748b;
+  --manager-leave-soft: #94a3b8;
+  --manager-leave-border: #e2e8f0;
+  --manager-leave-rule: #f1f5f9;
+  --manager-leave-surface: #ffffff;
+  --manager-leave-background: #f8fafc;
+  --manager-leave-purple: #9333ea;
+  --manager-leave-purple-dark: #7e22ce;
+  --manager-leave-purple-soft: #faf5ff;
+  --manager-leave-green: #047857;
+  --manager-leave-green-bg: #ecfdf5;
+  --manager-leave-red: #be123c;
+  --manager-leave-red-bg: #fff1f2;
+  --manager-leave-amber: #b45309;
+  --manager-leave-amber-bg: #fffbeb;
+}
+
+@keyframes manager-leave-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes manager-leave-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.manager-leave-page {
+  width: 100%;
+  max-width: 1380px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  color: var(--manager-leave-text);
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial,
+    sans-serif;
+  animation: manager-leave-fade-in 300ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.manager-leave-page *,
+.manager-leave-page *::before,
+.manager-leave-page *::after {
+  box-sizing: border-box;
+}
+
+.manager-leave-page button,
+.manager-leave-page input,
+.manager-leave-page select {
+  font: inherit;
+}
+
+/* Header */
+.manager-leave-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1.5rem 2rem;
+  background-color: var(--manager-leave-surface);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  border-radius: 1.5rem;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+}
+
+.manager-leave-title {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  margin: 0;
+  color: var(--manager-leave-ink);
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+}
+
+.manager-leave-title-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: var(--manager-leave-purple);
+}
+
+.manager-leave-subtitle {
+  margin: 0.25rem 0 0;
+  color: var(--manager-leave-muted);
+  font-size: 0.8125rem;
+}
+
+.manager-leave-refresh-button {
+  min-height: 2.625rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  color: var(--manager-leave-purple-dark);
+  background-color: var(--manager-leave-purple-soft);
+  border: 1px solid #e9d5ff;
+  border-radius: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    transform 150ms ease;
+}
+
+.manager-leave-refresh-button:hover:not(:disabled) {
+  background-color: #f3e8ff;
+  border-color: #d8b4fe;
+  transform: translateY(-1px);
+}
+
+.manager-leave-refresh-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.manager-leave-refresh-button svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.manager-leave-spin {
+  animation: manager-leave-spin 1s linear infinite;
+}
+
+/* Summary */
+.manager-leave-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.manager-leave-summary-card {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  background-color: var(--manager-leave-surface);
+  border: 1px solid var(--manager-leave-border);
+  border-radius: 1rem;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+}
+
+.manager-leave-summary-card > div:last-child {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.manager-leave-summary-icon {
+  width: 3rem;
+  height: 3rem;
+  flex: 0 0 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem;
+}
+
+.manager-leave-summary-icon svg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.manager-leave-summary-card--pending .manager-leave-summary-icon {
+  color: var(--manager-leave-amber);
+  background-color: #fef3c7;
+}
+
+.manager-leave-summary-card--approved .manager-leave-summary-icon {
+  color: var(--manager-leave-green);
+  background-color: #d1fae5;
+}
+
+.manager-leave-summary-card--rejected .manager-leave-summary-icon {
+  color: var(--manager-leave-red);
+  background-color: #ffe4e6;
+}
+
+.manager-leave-summary-card--cancelled .manager-leave-summary-icon {
+  color: #475569;
+  background-color: #f1f5f9;
+}
+
+.manager-leave-summary-label {
+  color: var(--manager-leave-muted);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.manager-leave-summary-value {
+  margin: 0.125rem 0;
+  color: var(--manager-leave-ink);
+  font-size: 1.5rem;
+  line-height: 1.2;
+}
+
+.manager-leave-summary-note {
+  overflow: hidden;
+  color: var(--manager-leave-soft);
+  font-size: 0.6875rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Alerts */
+.manager-leave-alert {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.875rem 1rem;
+  border-radius: 0.875rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.manager-leave-alert > svg {
+  width: 1rem;
+  height: 1rem;
+  flex: 0 0 1rem;
+}
+
+.manager-leave-alert--error {
+  color: var(--manager-leave-red);
+  background-color: var(--manager-leave-red-bg);
+  border: 1px solid #fecdd3;
+}
+
+.manager-leave-alert--success {
+  color: var(--manager-leave-green);
+  background-color: var(--manager-leave-green-bg);
+  border: 1px solid #a7f3d0;
+}
+
+.manager-leave-alert--success > span {
+  flex: 1;
+}
+
+.manager-leave-alert--success > button {
+  display: inline-flex;
+  padding: 0;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.manager-leave-alert--success > button svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Main content */
+.manager-leave-content-card {
+  overflow: hidden;
+  background-color: var(--manager-leave-surface);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  border-radius: 1.5rem;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+}
+
+.manager-leave-tabs {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0 1.5rem;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--manager-leave-border);
+}
+
+.manager-leave-tab {
+  position: relative;
+  min-height: 3.25rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 0.875rem;
+  color: var(--manager-leave-muted);
+  background: transparent;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 150ms ease;
+}
+
+.manager-leave-tab:hover {
+  color: var(--manager-leave-ink);
+}
+
+.manager-leave-tab--active {
+  color: var(--manager-leave-purple-dark);
+  border-bottom-color: var(--manager-leave-purple);
+}
+
+.manager-leave-tab-count {
+  min-width: 1.25rem;
+  height: 1.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0.375rem;
+  color: #475569;
+  background-color: #f1f5f9;
+  border-radius: 9999px;
+  font-size: 0.625rem;
+}
+
+.manager-leave-tab--active .manager-leave-tab-count {
+  color: var(--manager-leave-purple-dark);
+  background-color: #f3e8ff;
+}
+
+/* Filters */
+.manager-leave-filters {
+  display: grid;
+  grid-template-columns: minmax(240px, 1.8fr) repeat(2, minmax(130px, 1fr)) repeat(
+      2,
+      minmax(145px, 1fr)
+    ) auto;
+  align-items: end;
+  gap: 0.75rem;
+  padding: 1.25rem 1.5rem;
+  background-color: #f8fafc;
+  border-bottom: 1px solid var(--manager-leave-rule);
+}
+
+.manager-leave-search {
+  height: 2.625rem;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0 0.875rem;
+  background-color: #ffffff;
+  border: 1px solid var(--manager-leave-border);
+  border-radius: 0.75rem;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.manager-leave-search:focus-within {
+  border-color: #c084fc;
+  box-shadow: 0 0 0 3px rgba(192, 132, 252, 0.15);
+}
+
+.manager-leave-search svg {
+  width: 1rem;
+  height: 1rem;
+  flex: 0 0 1rem;
+  color: var(--manager-leave-soft);
+}
+
+.manager-leave-search input {
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  color: var(--manager-leave-ink);
+  background: transparent;
+  border: 0;
+  outline: 0;
+  font-size: 0.75rem;
+}
+
+.manager-leave-search input::placeholder {
+  color: var(--manager-leave-soft);
+}
+
+.manager-leave-filter-field {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.manager-leave-filter-field label {
+  color: var(--manager-leave-muted);
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.025em;
+  text-transform: uppercase;
+}
+
+.manager-leave-filter-field select,
+.manager-leave-filter-field input {
+  width: 100%;
+  height: 2.625rem;
+  padding: 0 0.75rem;
+  color: var(--manager-leave-text);
+  background-color: #ffffff;
+  border: 1px solid var(--manager-leave-border);
+  border-radius: 0.75rem;
+  outline: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.manager-leave-filter-field select:focus,
+.manager-leave-filter-field input:focus {
+  border-color: #c084fc;
+  box-shadow: 0 0 0 3px rgba(192, 132, 252, 0.15);
+}
+
+.manager-leave-filter-field--year {
+  max-width: 9rem;
+}
+
+.manager-leave-clear-button {
+  height: 2.625rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0 0.875rem;
+  color: #475569;
+  background-color: #ffffff;
+  border: 1px solid var(--manager-leave-border);
+  border-radius: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 150ms ease;
+}
+
+.manager-leave-clear-button:hover {
+  background-color: #f1f5f9;
+}
+
+.manager-leave-clear-button svg {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+.manager-leave-results-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 2.75rem;
+  padding: 0.625rem 1.5rem;
+  color: var(--manager-leave-muted);
+  border-bottom: 1px solid var(--manager-leave-rule);
+  font-size: 0.6875rem;
+}
+
+.manager-leave-results-bar > div {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.manager-leave-results-bar svg {
+  width: 0.875rem;
+  height: 0.875rem;
+  color: var(--manager-leave-purple);
+}
+
+.manager-leave-results-bar strong {
+  color: var(--manager-leave-text);
+}
+
+/* Table */
+.manager-leave-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.manager-leave-table {
+  width: 100%;
+  min-width: 1040px;
+  border-collapse: collapse;
+  color: #475569;
+  font-size: 0.75rem;
+  text-align: left;
+}
+
+.manager-leave-table th {
+  padding: 0.875rem 1.25rem;
+  color: #334155;
+  background-color: #f8fafc;
+  border-bottom: 1px solid var(--manager-leave-rule);
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.manager-leave-table td {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--manager-leave-rule);
+  vertical-align: middle;
+}
+
+.manager-leave-table tbody tr {
+  transition: background-color 150ms ease;
+}
+
+.manager-leave-table tbody tr:hover {
+  background-color: rgba(248, 250, 252, 0.75);
+}
+
+.manager-leave-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.manager-leave-employee-name {
+  display: block;
+  color: var(--manager-leave-ink);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.manager-leave-employee-code {
+  display: block;
+  margin-top: 0.125rem;
+  color: var(--manager-leave-soft);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+}
+
+.manager-leave-type-name {
+  color: var(--manager-leave-text);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.manager-leave-period {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  white-space: nowrap;
+}
+
+.manager-leave-period svg {
+  width: 0.875rem;
+  height: 0.875rem;
+  color: var(--manager-leave-purple);
+}
+
+.manager-leave-days {
+  color: var(--manager-leave-ink);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.manager-leave-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.1875rem 0.625rem;
+  border: 1px solid transparent;
+  border-radius: 9999px;
+  font-size: 0.625rem;
+  font-weight: 800;
+  letter-spacing: 0.025em;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.manager-leave-status--pending {
+  color: #92400e;
+  background-color: var(--manager-leave-amber-bg);
+  border-color: #fde68a;
+}
+
+.manager-leave-status--approved {
+  color: var(--manager-leave-green);
+  background-color: var(--manager-leave-green-bg);
+  border-color: #a7f3d0;
+}
+
+.manager-leave-status--rejected {
+  color: var(--manager-leave-red);
+  background-color: var(--manager-leave-red-bg);
+  border-color: #fecdd3;
+}
+
+.manager-leave-status--cancelled,
+.manager-leave-status--default {
+  color: #475569;
+  background-color: #f1f5f9;
+  border-color: var(--manager-leave-border);
+}
+
+.manager-leave-text-right {
+  text-align: right;
+}
+
+.manager-leave-row-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.375rem;
+}
+
+.manager-leave-button {
+  min-height: 1.875rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  padding: 0.375rem 0.625rem;
+  border: 0;
+  border-radius: 0.5rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease;
+}
+
+.manager-leave-button svg {
+  width: 0.8125rem;
+  height: 0.8125rem;
+}
+
+.manager-leave-button--view {
+  color: var(--manager-leave-purple-dark);
+  background-color: var(--manager-leave-purple-soft);
+}
+
+.manager-leave-button--view:hover {
+  background-color: #f3e8ff;
+}
+
+.manager-leave-button--approve {
+  color: var(--manager-leave-green);
+  background-color: var(--manager-leave-green-bg);
+}
+
+.manager-leave-button--approve:hover {
+  color: #ffffff;
+  background-color: #059669;
+}
+
+.manager-leave-button--reject {
+  color: var(--manager-leave-red);
+  background-color: var(--manager-leave-red-bg);
+}
+
+.manager-leave-button--reject:hover {
+  color: #ffffff;
+  background-color: #e11d48;
+}
+
+.manager-leave-state-cell {
+  height: 14rem;
+  text-align: center;
+  color: var(--manager-leave-soft);
+}
+
+.manager-leave-state-cell > * {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.manager-leave-state-cell strong {
+  margin-top: 0.5rem;
+  color: var(--manager-leave-text);
+  font-size: 0.875rem;
+}
+
+.manager-leave-state-cell span {
+  margin-top: 0.25rem;
+}
+
+.manager-leave-empty-icon {
+  width: 2rem;
+  height: 2rem;
+  color: #cbd5e1;
+}
+
+.manager-leave-spinner {
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-bottom: 0.625rem;
+  border: 2px solid var(--manager-leave-purple);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: manager-leave-spin 1s linear infinite;
+}
+
+/* Modals */
+.manager-leave-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background-color: rgba(2, 6, 23, 0.72);
+  backdrop-filter: blur(4px);
+  animation: manager-leave-fade-in 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.manager-leave-modal-overlay--confirm {
+  z-index: 1010;
+}
+
+.manager-leave-modal {
+  width: 100%;
+  overflow: hidden;
+  background-color: #ffffff;
+  border: 1px solid var(--manager-leave-border);
+  border-radius: 1.5rem;
+  box-shadow: 0 25px 50px -12px rgba(2, 6, 23, 0.35);
+}
+
+.manager-leave-details-modal {
+  max-width: 42rem;
+  max-height: calc(100vh - 2rem);
+  display: flex;
+  flex-direction: column;
+}
+
+.manager-leave-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--manager-leave-rule);
+}
+
+.manager-leave-modal-header h2 {
+  margin: 0;
+  color: var(--manager-leave-ink);
+  font-size: 1.125rem;
+  font-weight: 800;
+}
+
+.manager-leave-modal-header p {
+  margin: 0.25rem 0 0;
+  color: var(--manager-leave-muted);
+  font-size: 0.75rem;
+}
+
+.manager-leave-modal-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem;
+  color: var(--manager-leave-soft);
+  background: transparent;
+  border: 0;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition:
+    color 150ms ease,
+    background-color 150ms ease;
+}
+
+.manager-leave-modal-close:hover {
+  color: var(--manager-leave-text);
+  background-color: #f1f5f9;
+}
+
+.manager-leave-modal-close svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.manager-leave-modal-body {
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+
+.manager-leave-details-loading {
+  min-height: 16rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--manager-leave-soft);
+  font-size: 0.75rem;
+}
+
+.manager-leave-employee-summary {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 1rem;
+  background-color: #f8fafc;
+  border: 1px solid var(--manager-leave-rule);
+  border-radius: 1rem;
+}
+
+.manager-leave-avatar {
+  width: 2.75rem;
+  height: 2.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  background-color: var(--manager-leave-purple);
+  border-radius: 9999px;
+  font-size: 1.125rem;
+  font-weight: 800;
+}
+
+.manager-leave-employee-summary h3 {
+  margin: 0;
+  color: var(--manager-leave-ink);
+  font-size: 0.9375rem;
+}
+
+.manager-leave-employee-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem 0.75rem;
+  margin-top: 0.25rem;
+  color: var(--manager-leave-muted);
+  font-size: 0.6875rem;
+}
+
+.manager-leave-employee-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.manager-leave-employee-meta svg {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+.manager-leave-details-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.manager-leave-detail-item {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.875rem;
+  background-color: #ffffff;
+  border: 1px solid var(--manager-leave-border);
+  border-radius: 0.75rem;
+}
+
+.manager-leave-detail-item > span {
+  color: var(--manager-leave-soft);
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.manager-leave-detail-item > strong {
+  overflow: hidden;
+  color: var(--manager-leave-text);
+  font-size: 0.75rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.manager-leave-detail-section {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #f8fafc;
+  border: 1px solid var(--manager-leave-rule);
+  border-radius: 0.875rem;
+}
+
+.manager-leave-detail-section h3 {
+  margin: 0 0 0.5rem;
+  color: var(--manager-leave-ink);
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.manager-leave-detail-section p {
+  margin: 0;
+  color: var(--manager-leave-muted);
+  font-size: 0.75rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.manager-leave-document-link,
+.manager-leave-document-attached {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--manager-leave-purple-dark);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.manager-leave-document-link {
+  text-decoration: none;
+}
+
+.manager-leave-document-link:hover {
+  text-decoration: underline;
+}
+
+.manager-leave-document-link svg,
+.manager-leave-document-attached svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.manager-leave-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem;
+  background-color: #f8fafc;
+  border-top: 1px solid var(--manager-leave-rule);
+}
+
+.manager-leave-modal-button {
+  min-height: 2.375rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0.5rem 1rem;
+  border: 0;
+  border-radius: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    opacity 150ms ease;
+}
+
+.manager-leave-modal-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.manager-leave-modal-button svg {
+  width: 0.9375rem;
+  height: 0.9375rem;
+}
+
+.manager-leave-modal-button--secondary {
+  color: #475569;
+  background-color: #e2e8f0;
+}
+
+.manager-leave-modal-button--secondary:hover:not(:disabled) {
+  background-color: #cbd5e1;
+}
+
+.manager-leave-modal-button--approve {
+  color: #ffffff;
+  background-color: #059669;
+}
+
+.manager-leave-modal-button--approve:hover:not(:disabled) {
+  background-color: var(--manager-leave-green);
+}
+
+.manager-leave-modal-button--reject {
+  color: #ffffff;
+  background-color: #e11d48;
+}
+
+.manager-leave-modal-button--reject:hover:not(:disabled) {
+  background-color: var(--manager-leave-red);
+}
+
+/* Confirmation */
+.manager-leave-confirm-modal {
+  max-width: 28rem;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.manager-leave-confirm-icon {
+  width: 3.5rem;
+  height: 3.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+  border-radius: 9999px;
+}
+
+.manager-leave-confirm-icon svg {
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
+.manager-leave-confirm-icon--approve {
+  color: var(--manager-leave-green);
+  background-color: var(--manager-leave-green-bg);
+}
+
+.manager-leave-confirm-icon--reject {
+  color: var(--manager-leave-red);
+  background-color: var(--manager-leave-red-bg);
+}
+
+.manager-leave-confirm-modal h2 {
+  margin: 0;
+  color: var(--manager-leave-ink);
+  font-size: 1.125rem;
+  font-weight: 800;
+}
+
+.manager-leave-confirm-modal > p {
+  margin: 0.75rem 0 0;
+  color: var(--manager-leave-muted);
+  font-size: 0.75rem;
+  line-height: 1.6;
+}
+
+.manager-leave-confirm-note {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  color: #92400e;
+  background-color: var(--manager-leave-amber-bg);
+  border: 1px solid #fde68a;
+  border-radius: 0.75rem;
+  font-size: 0.6875rem;
+  line-height: 1.5;
+  text-align: left;
+}
+
+.manager-leave-confirm-modal .manager-leave-alert {
+  margin-top: 1rem;
+  text-align: left;
+}
+
+.manager-leave-confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--manager-leave-rule);
+}
+
+.manager-leave-button-spinner {
+  width: 0.875rem;
+  height: 0.875rem;
+  border: 2px solid rgba(255, 255, 255, 0.55);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: manager-leave-spin 1s linear infinite;
+}
+
+/* Keyboard focus */
+.manager-leave-page button:focus-visible,
+.manager-leave-page a:focus-visible,
+.manager-leave-page input:focus-visible,
+.manager-leave-page select:focus-visible {
+  outline: 3px solid rgba(168, 85, 247, 0.25);
+  outline-offset: 2px;
+}
+
+/* Responsive */
+@media (max-width: 1180px) {
+  .manager-leave-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .manager-leave-filters {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .manager-leave-search {
+    grid-column: span 2;
+  }
+
+  .manager-leave-filter-field--year {
+    max-width: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .manager-leave-page {
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .manager-leave-header {
+    align-items: flex-start;
+    padding: 1.25rem;
+  }
+
+  .manager-leave-title {
+    font-size: 1.25rem;
+  }
+
+  .manager-leave-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+
+  .manager-leave-summary-card {
+    padding: 1rem;
+  }
+
+  .manager-leave-filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 1rem;
+  }
+
+  .manager-leave-search {
+    grid-column: 1 / -1;
+  }
+
+  .manager-leave-clear-button {
+    width: 100%;
+  }
+
+  .manager-leave-tabs {
+    padding: 0 0.75rem;
+  }
+
+  .manager-leave-results-bar {
+    padding: 0.625rem 1rem;
+  }
+
+  .manager-leave-details-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .manager-leave-header {
+    flex-direction: column;
+  }
+
+  .manager-leave-refresh-button {
+    width: 100%;
+  }
+
+  .manager-leave-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .manager-leave-filters {
+    grid-template-columns: 1fr;
+  }
+
+  .manager-leave-search {
+    grid-column: auto;
+  }
+
+  .manager-leave-modal-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .manager-leave-modal {
+    border-radius: 1.25rem 1.25rem 0 0;
+  }
+
+  .manager-leave-details-modal {
+    max-height: 94vh;
+  }
+
+  .manager-leave-modal-header,
+  .manager-leave-modal-body,
+  .manager-leave-modal-footer {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .manager-leave-employee-summary {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .manager-leave-employee-summary > .manager-leave-status {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+
+  .manager-leave-details-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .manager-leave-modal-footer {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .manager-leave-modal-footer .manager-leave-modal-button:first-child {
+    grid-column: 1 / -1;
+  }
+
+  .manager-leave-confirm-modal {
+    max-width: none;
+  }
+
+  .manager-leave-confirm-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+}
+

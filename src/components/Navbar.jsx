@@ -10,9 +10,12 @@ import {
   Fingerprint,
   History,
   Calendar,
+  Inbox,
   CreditCard,
   LogOut,
   LogIn,
+  PlaneTakeoff,
+  CalendarCheck 
   CheckSquare,
   Shield,
   Clock,
@@ -131,6 +134,23 @@ function Navbar() {
                   </span>
                 </Link>
 
+                
+
+                <Link
+                  to="/leave"
+                  className={linkStyle("/leave")}
+                >
+                  <CalendarCheck  size={18} />
+                  My Leave Requests
+                </Link>
+                <Link
+                  to="/leave/all"
+                  className={linkStyle("/leave/all")}
+                >
+                  <Inbox size={18} />
+                  Leave Requests Management
+                </Link>
+
                 <Link to="/payslips" className={linkStyle("/payslips")}>
                   <CreditCard size={18} />
                   <span>{t("nav.payslips", "Payslips")}</span>
@@ -160,6 +180,22 @@ function Navbar() {
                   <History size={18} />
                   My Attendance
                 </Link>
+                <Link
+                  to="/leave"
+                  className={linkStyle("/leave")}
+                >
+                  <CalendarCheck  size={18} />
+                  My Leave Requests
+                </Link>
+
+                <Link
+                  to={`/${user._id}/payslips`}
+                  className={linkStyle(`/${user._id}/payslips`)}
+                >
+                  <CreditCard size={18} />
+                  Payslips
+                </Link>
+
               </>
             )}
 
@@ -190,6 +226,32 @@ function Navbar() {
                   to="/manager/team-attendance"
                   className={linkStyle("/manager/team-attendance")}
                 >
+                  <Users size={18} />
+                  Team Attendance
+                </Link>
+
+                <Link
+                  to="/leave"
+                  className={linkStyle("/leave")}
+                >
+                  <CalendarCheck  size={18} />
+                  My Leave Requests
+                </Link>
+
+                <Link
+                  to="/leave/team"
+                  className={linkStyle("/manager/team-leave-requests")}
+                >
+                  <Inbox size={18} />
+                  Team Leave Requests
+                </Link>
+
+                <Link
+                  to={`/${user._id}/payslips`}
+                  className={linkStyle(`/${user._id}/payslips`)}
+                >
+                  <CreditCard size={18} />
+                  Payslips
                   <Users className="w-4 h-4 text-emerald-400" />
                   <span className="text-emerald-300 font-semibold">
                     {t("nav.teamAttendance", "Team Attendance")}

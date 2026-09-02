@@ -89,6 +89,16 @@ async function cancelLeaveRequest(leaveId, body){
     }
 }
 
+async function overrideLeaveRequest(leaveId, status){
+    try {
+        const response = await api.put(`/leave-requests/${leaveId}/override`, { status });
+
+        return response.data;
+    } catch (error){
+        throw new Error(error.response?.data?.message || error.message);
+    }
+}
+
 export {
     getLeaveRequestOptions,
     createLeaveRequest,
@@ -98,6 +108,7 @@ export {
     getLeaveRequestById,
     approveLeaveRequest,
     rejectLeaveRequest,
-    cancelLeaveRequest
+    cancelLeaveRequest,
+    overrideLeaveRequest
 };
 
