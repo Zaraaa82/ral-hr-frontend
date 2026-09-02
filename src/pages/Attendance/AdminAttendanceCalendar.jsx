@@ -146,7 +146,6 @@ function AdminAttendanceCalendar() {
     const departmentMap = new Map();
 
     employees.forEach((employee) => {
-      // Check both employee.department and employee.Department
       const dept = employee.department || employee.Department;
       if (!dept) return;
 
@@ -342,6 +341,14 @@ function AdminAttendanceCalendar() {
     }
 
     const date = new Date(year, month - 1, day);
+    const today = new Date();
+    today.setHours(23, 59, 59, 999);
+
+    // IF DATE IS IN THE FUTURE, DO NOT MARK ABSENT
+    if (date > today) {
+      return null;
+    }
+
     const dayName = DAYS_OF_WEEK[date.getDay()];
 
     const workingDays = [
@@ -495,49 +502,61 @@ function AdminAttendanceCalendar() {
               const dayName = DAYS_OF_WEEK[date.getDay()];
               const employeesForDay = calendarEmployees;
 
+              // Check if date is in the future
+              const today = new Date();
+              today.setHours(23, 59, 59, 999);
+              const isFuture = date > today;
+              const isToday = new Date().toDateString() === date.toDateString();
+
               return (
                 <div
                   key={day}
-                  className="calendar-day"
+                  className={`calendar-day ${isFuture ? "future-day" : ""} ${
+                    isToday ? "today" : ""
+                  }`}
                   title={`${dayName}, ${MONTH_NAMES[month - 1]} ${day}, ${year}`}
                 >
                   <span className="day-number">{day}</span>
 
                   <div className="day-logs">
-                    {employeesForDay.map((employee) => {
-                      const attendance = getAttendanceForEmployeeDate(
-                        employee,
-                        day,
-                      );
-                      const status = getStatusForEmployeeDate(employee, day);
-                      const statusClass = getStatusClass(status);
-                      const employeeName = getEmployeeName(employee);
+                    {/* ONLY SHOW LOGS/BADGES UP TO TODAY */}
+                    {!isFuture &&
+                      employeesForDay.map((employee) => {
+                        const attendance = getAttendanceForEmployeeDate(
+                          employee,
+                          day,
+                        );
+                        const status = getStatusForEmployeeDate(employee, day);
+                        if (!status) return null;
 
-                      return (
-                        <div
-                          key={`${employee._id}-${day}`}
-                          className={`calendar-badge ${statusClass}`}
-                          title={`${employeeName} - ${status}${
-                            attendance
-                              ? ` | In: ${formatTime(
-                                  attendance.inTime,
-                                )} | Out: ${formatTime(attendance.outTime)}`
-                              : ""
-                          }`}
-                        >
-                          <span className="emp-name">{employeeName}</span>
+                        const statusClass = getStatusClass(status);
+                        const employeeName = getEmployeeName(employee);
 
-                          <div className="badge-info">
-                            <span className="badge-status">{status}</span>
-                            {attendance?.flags?.includes("late") && (
-                              <span className="badge-late">L</span>
-                            )}
+                        return (
+                          <div
+                            key={`${employee._id}-${day}`}
+                            className={`calendar-badge ${statusClass}`}
+                            title={`${employeeName} - ${status}${
+                              attendance
+                                ? ` | In: ${formatTime(
+                                    attendance.inTime,
+                                  )} | Out: ${formatTime(attendance.outTime)}`
+                                : ""
+                            }`}
+                          >
+                            <span className="emp-name">{employeeName}</span>
+
+                            <div className="badge-info">
+                              <span className="badge-status">{status}</span>
+                              {attendance?.flags?.includes("late") && (
+                                <span className="badge-late">L</span>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      })}
 
-                    {calendarEmployees.length === 0 && (
+                    {!isFuture && calendarEmployees.length === 0 && (
                       <span className="no-employees">No employees</span>
                     )}
                   </div>

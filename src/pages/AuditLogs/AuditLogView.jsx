@@ -391,7 +391,7 @@ export default function AuditLogView() {
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search by actor, reason, record ID, or payload..."
+            placeholder="Search by actor"
             className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-slate-900 focus:outline-hidden font-medium"
           />
         </div>
