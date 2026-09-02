@@ -17,41 +17,6 @@ import {
 const API_BASE_URL =
   import.meta.env.VITE_BACK_END_SERVER_URL || "http://localhost:3000";
 
-const SAMPLE_AUDIT_LOGS = [
-  {
-    _id: "log-101",
-    timestamp: new Date().toISOString(),
-    changedBy: { fullName: "Fatema alawi", role: "HR Admin" },
-    entityType: "StatutorySettings",
-    action: "UPDATE",
-    reason: "Updated SIO Pension Rates for Bahraini nationals to 15%",
-    old_value: { employeeRate: 0.06, employerRate: 0.08 },
-    new_value: { employeeRate: 0.06, employerRate: 0.09 },
-  },
-  {
-    _id: "log-102",
-    timestamp: new Date(Date.now() - 3600000 * 2).toISOString(),
-    changedBy: { fullName: "Ali Al-Hassan", role: "Manager" },
-    entityType: "Attendance",
-    action: "CORRECT",
-    reason:
-      "Approved late clock-in regularisation request (Biometric reader sync delay)",
-    old_value: { inTime: "08:42", status: "Late" },
-    new_value: { inTime: "08:00", status: "Present" },
-  },
-  {
-    _id: "log-103",
-    timestamp: new Date(Date.now() - 86400000).toISOString(),
-    changedBy: { fullName: "System Admin", role: "HR Admin" },
-    entityType: "Payroll",
-    action: "APPROVE",
-    reason:
-      "Finalized and locked monthly salary disbursement for Operations Department",
-    old_value: { status: "pending" },
-    new_value: { status: "approved" },
-  },
-];
-
 export default function AuditLogView() {
   const { user, currentUser } = useAuth();
   const activeUser = user || currentUser;
@@ -104,7 +69,7 @@ export default function AuditLogView() {
     fetchEmployees();
   }, [getAuthHeaders]);
 
-  // Fetch Audit Logs with multi-key normalization
+  // Fetch Audit Logs directly from database/seeds
   const fetchAuditLogs = useCallback(async () => {
     try {
       setLoading(true);
@@ -126,7 +91,7 @@ export default function AuditLogView() {
         throw new Error(data.message || "Failed to load audit trail.");
       }
 
-      // Extract logs regardless of backend response format
+      // Extract logs from backend response format
       let rawLogs = [];
       if (Array.isArray(data)) {
         rawLogs = data;
@@ -140,28 +105,22 @@ export default function AuditLogView() {
         rawLogs = data.data;
       }
 
-      // If backend returns empty array, use initial mock audit records so UI is functional
-      if (rawLogs.length === 0) {
-        setLogs(SAMPLE_AUDIT_LOGS);
+      if (isManager && !isHRAdmin) {
+        const teamLogs = rawLogs.filter((l) => {
+          const actorId = l.changedBy?._id || l.user?._id || l.performedBy?._id;
+          return (
+            actorId === activeUser?._id ||
+            (l.entityType || "").toLowerCase() === "attendance"
+          );
+        });
+        setLogs(teamLogs);
       } else {
-        if (isManager && !isHRAdmin) {
-          const teamLogs = rawLogs.filter((l) => {
-            const actorId =
-              l.changedBy?._id || l.user?._id || l.performedBy?._id;
-            return (
-              actorId === activeUser?._id ||
-              (l.entityType || "").toLowerCase() === "attendance"
-            );
-          });
-          setLogs(teamLogs.length > 0 ? teamLogs : rawLogs);
-        } else {
-          setLogs(rawLogs);
-        }
+        setLogs(rawLogs);
       }
     } catch (err) {
       console.error("Audit log error:", err);
-      // Fallback to sample logs so the page still functions
-      setLogs(SAMPLE_AUDIT_LOGS);
+      setLogs([]);
+      setError(err.message || "Failed to fetch audit logs.");
     } finally {
       setLoading(false);
     }
@@ -396,25 +355,6 @@ export default function AuditLogView() {
           />
         </div>
 
-        {/* HR Department Filter */}
-        {isHRAdmin && (
-          <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 font-semibold text-slate-700">
-            <Building2 className="w-3.5 h-3.5 text-slate-400" />
-            <select
-              value={departmentFilter}
-              onChange={(e) => setDepartmentFilter(e.target.value)}
-              className="bg-transparent focus:outline-hidden cursor-pointer"
-            >
-              <option value="all">All Departments</option>
-              {departments.map((d) => (
-                <option key={d.id} value={d.id}>
-                  {d.name}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
-
         {/* Entity Filter */}
         <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 font-semibold text-slate-700">
           <Layers className="w-3.5 h-3.5 text-slate-400" />
@@ -440,7 +380,6 @@ export default function AuditLogView() {
           >
             <option value="all">All Actions</option>
             <option value="create">Create / Clock In</option>
-            <option value="update">Update</option>
             <option value="correct">Correction</option>
             <option value="approve">Approve</option>
             <option value="reject">Reject</option>
@@ -528,7 +467,7 @@ export default function AuditLogView() {
               ) : filteredLogs.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="text-center py-10 text-slate-400">
-                    No matching audit records found.
+                    No matching audit records found in the database.
                   </td>
                 </tr>
               ) : (
