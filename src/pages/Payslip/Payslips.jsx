@@ -158,7 +158,7 @@ function isReleasedForEmployee(payslip) {
     return false;
   }
 
-  return currentDay >= 25;
+  return currentDay >= 27;
 }
 
 export default function Payslips({ managementMode = false }) {
@@ -654,7 +654,7 @@ export default function Payslips({ managementMode = false }) {
   // =====================================================
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 animate-in fade-in duration-300">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 animate-in fade-in duration-300 min-h-[100vh]">
       {/* HEADER */}
 
       <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-4">
@@ -674,7 +674,7 @@ export default function Payslips({ managementMode = false }) {
           <p className="text-xs text-slate-500 mt-0.5">
             {managementMode
               ? "Generate, adjust, review, and approve employee monthly payslips."
-              : "Official salary statements released after HR approval on the 25th of each month."}
+              : "Official salary statements released after HR approval on the 27th of each month."}
           </p>
         </div>
 
@@ -736,7 +736,7 @@ export default function Payslips({ managementMode = false }) {
 
             <span>
               Approved payslips are published for employee access on the{" "}
-              <strong>25th of each month</strong>.
+              <strong>27th of each month</strong>.
             </span>
           </div>
         </div>
@@ -948,7 +948,7 @@ export default function Payslips({ managementMode = false }) {
           onClick={() => setSelectedPayslip(null)}
         >
           <div
-            className="bg-white rounded-3xl w-full max-w-2xl shadow-2xl border border-slate-200 overflow-hidden"
+            className="bg-white rounded-3xl w-full max-w-xl max-h-[82vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/50">
@@ -971,7 +971,7 @@ export default function Payslips({ managementMode = false }) {
               </button>
             </div>
 
-            <div className="p-6 sm:p-8 space-y-6 max-h-[70vh] overflow-y-auto">
+            <div className="p-5 sm:p-6 space-y-5 flex-1 min-h-0 overflow-y-auto">
               <div className="flex items-center justify-between pb-4 border-b border-slate-100">
                 <div>
                   <h1 className="text-xl font-black text-slate-900 tracking-tight">
@@ -1140,7 +1140,7 @@ export default function Payslips({ managementMode = false }) {
               </div>
             </div>
 
-            <div className="flex justify-end gap-2 px-6 py-4 bg-slate-50 border-t border-slate-100">
+            <div className="shrink-0 flex justify-end gap-2 px-6 py-4 bg-slate-50 border-t border-slate-100">
               <button
                 type="button"
                 onClick={() => window.print()}
